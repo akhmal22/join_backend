@@ -23,4 +23,7 @@ module.exports = function(app) {
 
     app.route('/register')
         .post(users.createUsers);
+
+    app.route('/login')
+        .post(users.loginUsers);
 };

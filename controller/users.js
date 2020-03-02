@@ -23,12 +23,15 @@ exports.createUsers = function(req, res) {
     var position = req.body.position;
     var username = req.body.username;
 
+    // INSERT INTO query
     connection.query('INSERT INTO Users (full_name, phone, email, password, organization, position, username) values (?,?,?,?,?,?,?)',
     [ full_name, phone, email, password, organization, position, username ], 
     function (error, rows, fields){
         if(error){
+            // error to the log
             console.log(error)
         } else{
+            // success message
             response.ok("Berhasil menambahkan user!", res)
         }
     });
@@ -73,3 +76,29 @@ exports.deleteUsers = function(req, res) {
         }
     });
 };
+
+exports.loginUsers = function(req, res) {
+    // requests username and password
+    var username = req.body.username;
+    var password = req.body.password;
+
+    // SELECT password query
+    connection.query('SELECT password FROM Users WHERE username = ?',
+    [ username ],
+    function(error, rows, fields){
+        // puts query result rows to const
+        const pw = rows;
+
+        // checks if password requested match
+        const match = pw.find(p => {
+            return p.password === password
+        });
+
+        // success message or fail message
+        if(match){
+            response.ok("loggedin",res);
+        }else{
+            response.ok("notmatch",res);
+        }
+    });
+}
