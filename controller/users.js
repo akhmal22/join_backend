@@ -2,6 +2,21 @@
 
 var response = require('../res');
 var connection = require('../conn');
+var crypto = require('crypto');
+var jwt = require('jsonwebtoken');
+var cookieParser = require('cookie-parser');
+require('dotenv')
+
+var getHashedPassword = (password) => {
+    var sha256 = crypto.createHash('sha256');
+    var hash = sha256.update(password).digest('base64');
+    return hash;
+}
+
+var generateAuthToken = (un) => {
+    var token = jwt.sign({username: un}, process.env.JWT_KEY);
+    return token;
+}
 
 exports.readUsers = function(req, res) {
     connection.query('SELECT * FROM Users', function (error, rows, fields){
@@ -23,18 +38,25 @@ exports.createUsers = function(req, res) {
     var position = req.body.position;
     var username = req.body.username;
 
-    // INSERT INTO query
-    connection.query('INSERT INTO Users (full_name, phone, email, password, organization, position, username) values (?,?,?,?,?,?,?)',
-    [ full_name, phone, email, password, organization, position, username ], 
-    function (error, rows, fields){
-        if(error){
-            // error to the log
-            console.log(error)
-        } else{
-            // success message
-            response.ok("Berhasil menambahkan user!", res)
-        }
-    });
+    var hashPasswd = getHashedPassword(password);
+    var token = generateAuthToken(username);
+
+    try {
+        // INSERT INTO query
+        connection.query('INSERT INTO Users (full_name, phone, email, password, organization, position, username, token) values (?,?,?,?,?,?,?,?)',
+        [ full_name, phone, email, hashPasswd, organization, position, username, token ], 
+        function (error, rows, fields){
+            if(error){
+                // error to the log
+                response.internalError(error.code, res);
+            } else{
+                // success message
+                response.ok("Operation Success", res);
+            }
+        });
+    } catch (error){
+        response.clientError("Bad Request",res);
+    }
 };
 
 
@@ -91,14 +113,33 @@ exports.loginUsers = function(req, res) {
 
         // checks if password requested match
         const match = pw.find(p => {
-            return p.password === password
+            return p.password === getHashedPassword(password);
         });
 
         // success message or fail message
         if(match){
-            response.ok("loggedin",res);
+            response.ok('loggedin',res);
         }else{
             response.ok("notmatch",res);
+        }
+    });
+}
+
+exports.updateToken = function(req, res) {
+    var username = req.body.username;
+    var password = req.body.password;
+
+    var hashPasswd = getHashedPassword(password)
+
+    var token = generateAuthToken(username);
+
+    connection.query('UPDATE Users SET token = ? WHERE username = ? AND password = ?',
+    [ token, username, hashPasswd ],
+    function(error, rows, fields) {
+        if(error){
+            response.internalError("Operation Failed",res);
+        } else{
+            response.ok("Operation Success", res);
         }
     });
 }

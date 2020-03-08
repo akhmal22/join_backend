@@ -6,7 +6,7 @@ var connection = require('../conn');
 exports.readProjects = function(req, res) {
     connection.query('SELECT * FROM Projects', function (error, rows, fields){
         if(error){
-            console.log(error)
+            response.internalError(error.code, res);
         } else{
             response.ok(rows, res)
         }
@@ -20,17 +20,15 @@ exports.createProjects = function(req, res) {
     var type = req.body.type;
     var due_date = req.body.due_date;
     var num_req_collaborator = req.body.num_req_collaborator;
-    var thumbnail = req.body.thumbnail;
-    var status = req.body.status;
     var user_id = req.body.user_id;
 
-    connection.query('INSERT INTO Projects (name, description, type, due_date, num_req_collaborator, thumbnail, status, user_id) values (?,?,?,?,?,?,?,?)',
-    [ name, description, type, due_date, num_req_collaborator, thumbnail, status, user_id ], 
+    connection.query('INSERT INTO Projects (name, description, type, due_date, num_req_collaborator, user_id) values (?,?,?,?,?,?)',
+    [ name, description, type, due_date, num_req_collaborator, user_id ], 
     function (error, rows, fields){
         if(error){
-            console.log(error)
+            response.internalError(error.code, res)
         } else{
-            response.ok("Berhasil menambahkan user!", res)
+            response.ok("Operation Success", res)
         }
     });
 };
@@ -38,23 +36,20 @@ exports.createProjects = function(req, res) {
 
 exports.updateProjects = function(req, res) {
     
-    var name = req.body.name;
     var description = req.body.description;
-    var type = req.body.type;
     var due_date = req.body.due_date;
     var num_req_collaborator = req.body.num_req_collaborator;
     var thumbnail = req.body.thumbnail;
     var status = req.body.status;
-    var user_id = req.body.user_id;
     var id = req.body.id;
 
-    connection.query('UPDATE Projects SET name = ?, description = ?, type = ?, due_date = ?, num_req_collaborator = ?, thumbnail = ?, status = ?, user_id = ? WHERE id = ?',
-    [ name, description, type, due_date, num_req_collaborator, thumbnail, status, user_id, id ], 
+    connection.query('UPDATE Projects SET description = ?, due_date = ?, num_req_collaborator = ?, thumbnail = ?, status = ? WHERE id = ?',
+    [ description, due_date, num_req_collaborator, thumbnail, status, id ], 
     function (error, rows, fields){
         if(error){
-            console.log(error)
+            response.internalError(error, res)
         } else{
-            response.ok("Berhasil merubah user!", res)
+            response.ok("Operation Success", res)
         }
     });
 };
@@ -67,9 +62,9 @@ exports.deleteProjects = function(req, res) {
     [ id ], 
     function (error, rows, fields){
         if(error){
-            console.log(error)
+            response.internalError(error, res)
         } else{
-            response.ok("Berhasil menghapus user!", res)
+            response.ok("Operation Success", res)
         }
     });
 };

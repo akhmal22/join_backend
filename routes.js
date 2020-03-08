@@ -21,9 +21,24 @@ module.exports = function(app) {
         res.send("Homepage")
     });
 
-    app.route('/register')
+    app.route('/user/register')
         .post(users.createUsers);
 
-    app.route('/login')
+    app.route('/user/login')
         .post(users.loginUsers);
+
+    app.route('/user/token')
+        .post(users.updateToken);
+
+    app.route('/projects')
+        .get(projects.readProjects);
+
+    app.route('/project/register')
+        .post(projects.createProjects)
+
+    app.route('/project/:id')
+        .put(projects.updateProjects)
+
+    app.route('/project/:id')
+        .delete(projects.deleteProjects)
 };
