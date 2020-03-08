@@ -28,7 +28,7 @@ module.exports = function(app) {
         .post(users.loginUsers);
 
     app.route('/user/token')
-        .post(users.updateToken);
+        .put(users.updateToken);
 
     app.route('/projects')
         .get(projects.readProjects);
@@ -41,4 +41,17 @@ module.exports = function(app) {
 
     app.route('/project/:id')
         .delete(projects.deleteProjects)
+
+    app.route('/project/:id/apply')
+        .post(collaborators.createCollaborators)
+
+    app.route('/project/:id/applicant')
+        .get(collaborators.readCollaborators)
+
+    app.route('/project/:id/applicant/accept')
+        .put(collaborators.updateCollaborators)
+    
+    app.route('/project/:id/applicant/reject')
+        .delete(collaborators.deleteCollaborators)
+    
 };

@@ -4,11 +4,13 @@ var response = require('../res');
 var connection = require('../conn');
 
 exports.readCollaborators = function(req, res) {
-    connection.query('SELECT * FROM Collaborators', function (error, rows, fields){
+     var project_id = req.body.project_id;
+
+    connection.query('SELECT * FROM Collaborators WHERE project_id = ?', [ project_id ], function (error, rows, fields){
         if(error){
-            console.log(error)
+            response.internalError(error.code);
         } else{
-            response.ok(rows, res)
+            response.ok(rows, res);
         }
     });
 };
@@ -23,9 +25,9 @@ exports.createCollaborators = function(req, res) {
     [ status, project_id, user_id ], 
     function (error, rows, fields){
         if(error){
-            console.log(error)
+            response.internalError(error.code);
         } else{
-            response.ok("Berhasil menambahkan user!", res)
+            response.ok("Berhasil menambahkan user!", res);
         }
     });
 };
@@ -42,9 +44,9 @@ exports.updateCollaborators = function(req, res) {
     [ status, project_id, user_id, id ], 
     function (error, rows, fields){
         if(error){
-            console.log(error)
+            response.internalError(error.code);
         } else{
-            response.ok("Berhasil merubah user!", res)
+            response.ok("Berhasil merubah user!", res);
         }
     });
 };
@@ -57,9 +59,9 @@ exports.deleteCollaborators = function(req, res) {
     [ id ], 
     function (error, rows, fields){
         if(error){
-            console.log(error)
+            response.internalError(error.code);
         } else{
-            response.ok("Berhasil menghapus user!", res)
+            response.ok("Berhasil menghapus user!", res);
         }
     });
 };
