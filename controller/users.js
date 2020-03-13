@@ -53,6 +53,7 @@ exports.createUsers = function(req, res) {
                 // success message
                 response.ok("Operation Success", res);
             }
+            console.log(error)
         });
     } catch (error){
         response.clientError("Bad Request",res);
