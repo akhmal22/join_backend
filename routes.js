@@ -14,15 +14,16 @@ module.exports = function(app) {
     var collaborators = require('./controller/collaborators');
     var chats = require('./controller/chats');
 
-    app.route('/users')
-        .get(users.readUsers);
-
+    // backend root
     app.get('/', function(req, res){
         res.send("Homepage")
     });
 
 
     // user
+    app.route('/users')
+        .get(users.readUsers);
+    
     app.route('/user/register')
         .post(users.createUsers);
 
@@ -31,6 +32,12 @@ module.exports = function(app) {
 
     app.route('/user/token')
         .put(users.updateToken);
+
+    app.route('/user/:id')
+        .put(users.updateUsers);
+
+    app.route('/user/:id')
+        .delete(users.deleteUsers);
 
     
     // project
@@ -67,6 +74,12 @@ module.exports = function(app) {
 
     app.route('/user/experiences/')
         .get(experiences.readExperiences)
+
+    app.route('/user/experiences/:id')
+        .put(experiences.updateExperiences)
+
+    app.route('/user/experiences/:id')
+        .delete(experiences.deleteExperiences)
     
 
     // skills
@@ -76,6 +89,12 @@ module.exports = function(app) {
     app.route('/user/skills/')
         .get(skills.readSkills)
 
+    app.route('/user/skills/:id')
+        .put(skills.updateSkills)
+
+    app.route('/user/skills/:id')
+        .delete(skills.deleteSkills)
+
 
     // portfolios
     app.route('/user/portfolios/register')
@@ -83,6 +102,12 @@ module.exports = function(app) {
 
     app.route('/user/portfolios/')
         .get(portfolios.readPortfolios)
+
+    app.route('/user/portfolios/:id')
+        .put(portfolios.updatePortfolios)
+
+    app.route('/user/portfolios/:id')
+        .delete(portfolios.deletePortfolios)
     
 
     // licenses
@@ -92,6 +117,12 @@ module.exports = function(app) {
     app.route('/user/licenses/')
         .get(licenses.readLicenses)
 
+    app.route('/user/licenses/:id')
+        .put(licenses.updateLicenses)
+
+    app.route('/user/licenses/:id')
+        .delete(licenses.deleteLicenses)
+
 
     // roles
     app.route('/collab/:id/roles/register')
@@ -99,6 +130,12 @@ module.exports = function(app) {
 
     app.route('/collab/:id/roles/')
         .get(roles.readRoles)
+
+    app.route('/user/roles/:id')
+        .put(roles.updateRoles)
+
+    app.route('/user/roles/:id')
+        .delete(roles.deleteRoles)
 
 
     // comments
@@ -108,6 +145,12 @@ module.exports = function(app) {
     app.route('/project/:id/comments/')
         .get(comments.readComments)
 
+    app.route('/project/:id/comments/:id')
+        .put(comments.updateComments)
+
+    app.route('/project/:id/comments/:id')
+        .delete(comments.deleteComments)
+
 
     // chats
     app.route('/user/:id/chats/register')
@@ -116,6 +159,12 @@ module.exports = function(app) {
     app.route('/user/:id/chats/')
         .get(chats.readChats)
 
+    app.route('/user/:id/chats/:id')
+        .put(chats.updateChats)
+
+    app.route('/user/:id/chats/:id')
+        .delete(chats.deleteChats)
+
 
     // joinedProjects
     app.route('/joined/register/')
@@ -123,4 +172,10 @@ module.exports = function(app) {
 
     app.route('/joined/')
         .get(joinedProjects.readJoinedProjects)
+
+    app.route('/joined/:id')
+        .put(joinedProjects.updateJoinedProjects)
+
+    app.route('/joined/:id')
+        .delete(joinedProjects.deleteJoinedProjects)
 };

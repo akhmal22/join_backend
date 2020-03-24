@@ -52,30 +52,38 @@ exports.updateLicenses = function(req, res) {
     var description = req.body.description;
     var credential = req.body.credential;
     var user_id = req.body.user_id;
-    var id = req.body.id;
+    var id = req.params.id;
 
-    connection.query('UPDATE Licenses SET name = ?, issue_date = ?, exp_date = ?, organization = ?, description = ?, credential = ?, user_id = ? WHERE id = ?',
-    [ name, issue_date, exp_date, organization, description, credential, user_id, id ], 
-    function (error, rows, fields){
-        if(error){
-            console.log(error)
-        } else{
-            response.ok("Berhasil merubah user!", res)
-        }
-    });
+    try{
+        connection.query('UPDATE Licenses SET name = ?, issue_date = ?, exp_date = ?, organization = ?, description = ?, credential = ?, user_id = ? WHERE id = ?',
+        [ name, issue_date, exp_date, organization, description, credential, user_id, id ], 
+        function (error, rows, fields){
+            if(error){
+                response.internalError(error.code,res);
+            } else{
+                response.ok("Operation Success!", res)
+            }
+        });
+    }catch(err){
+        response.clientError("Bad Request",res);
+    }
 };
 
 exports.deleteLicenses = function(req, res) {
     
-    var id = req.body.id;
+    var id = req.params.id;
 
-    connection.query('DELETE FROM Licenses WHERE id = ?',
-    [ id ], 
-    function (error, rows, fields){
-        if(error){
-            console.log(error)
-        } else{
-            response.ok("Berhasil menghapus user!", res)
-        }
-    });
+    try{
+        connection.query('DELETE FROM Licenses WHERE id = ?',
+        [ id ], 
+        function (error, rows, fields){
+            if(error){
+                response.internalError(error.code,res);
+            } else{
+                response.ok("Operation Success!", res)
+            }
+        });
+    }catch(err){
+        response.clientError("Bad Request",res);
+    }
 };

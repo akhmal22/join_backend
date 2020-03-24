@@ -74,30 +74,38 @@ exports.updateUsers = function(req, res) {
     var username = req.body.username;
     var id = req.body.id;
 
-    connection.query('UPDATE Users SET full_name = ?, phone = ?, email = ?, password = ?, avatar = ?, status = ?, organization = ?, position = ?, username = ? WHERE id = ?',
-    [ full_name, phone, email, password, avatar, status, organization, position, username, id ], 
-    function (error, rows, fields){
-        if(error){
-            console.log(error)
-        } else{
-            response.ok("Berhasil merubah user!", res)
-        }
-    });
+    try{
+        connection.query('UPDATE Users SET full_name = ?, phone = ?, email = ?, password = ?, avatar = ?, status = ?, organization = ?, position = ?, username = ? WHERE id = ?',
+        [ full_name, phone, email, password, avatar, status, organization, position, username, id ], 
+        function (error, rows, fields){
+            if(error){
+                response.internalError(error.code, res);
+            } else{
+                response.ok("Berhasil merubah user!", res)
+            }
+        });
+    }catch(err){
+        response.clientError("Bad Request",res);
+    }
 };
 
 exports.deleteUsers = function(req, res) {
     
     var id = req.body.id;
 
-    connection.query('DELETE FROM Users WHERE id = ?',
-    [ id ], 
-    function (error, rows, fields){
-        if(error){
-            console.log(error)
-        } else{
-            response.ok("Berhasil menghapus user!", res)
-        }
-    });
+    try{
+        connection.query('DELETE FROM Users WHERE id = ?',
+        [ id ], 
+        function (error, rows, fields){
+            if(error){
+                response.internalError(error.code, res);
+            } else{
+                response.ok("Berhasil menghapus user!", res)
+            }
+        });
+    }catch(err){
+        response.clientError("Bad Request",res);
+    }
 };
 
 exports.loginUsers = function(req, res) {
