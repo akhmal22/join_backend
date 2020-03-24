@@ -4,13 +4,17 @@ var response = require('../res');
 var connection = require('../conn');
 
 exports.readExperiences = function(req, res) {
-    connection.query('SELECT * FROM Experiences', function (error, rows, fields){
-        if(error){
-            console.log(error)
-        } else{
-            response.ok(rows, res)
-        }
-    });
+    try{
+        connection.query('SELECT * FROM Experiences', function (error, rows, fields){
+            if(error){
+                console.log(error)
+            } else{
+                response.ok(rows, res)
+            }
+        });
+    }catch(err){
+        response.clientError("Bad Request", res)
+    }
 };
 
 exports.createExperiences = function(req, res) {
@@ -22,15 +26,19 @@ exports.createExperiences = function(req, res) {
     var description = req.body.description;
     var user_id = req.body.user_id;
 
-    connection.query('INSERT INTO Experiences (name, company, start_date, end_date, description, user_id) values (?,?,?,?,?,?)',
-    [ name, company, start_date, end_date, description, user_id ], 
-    function (error, rows, fields){
-        if(error){
-            console.log(error)
-        } else{
-            response.ok("Berhasil menambahkan user!", res)
-        }
-    });
+    try{
+        connection.query('INSERT INTO Experiences (name, company, start_date, end_date, description, user_id) values (?,?,?,?,?,?)',
+        [ name, company, start_date, end_date, description, user_id ], 
+        function (error, rows, fields){
+            if(error){
+                response.internalError(error.code, res);
+            } else{
+                response.ok("Operation Success!", res)
+            }
+        });
+    }catch(err){
+        response.clientError("Bad Request",res);
+    }
 };
 
 

@@ -4,13 +4,17 @@ var response = require('../res');
 var connection = require('../conn');
 
 exports.readLicenses = function(req, res) {
-    connection.query('SELECT * FROM Licenses', function (error, rows, fields){
-        if(error){
-            console.log(error)
-        } else{
-            response.ok(rows, res)
-        }
-    });
+    try{
+        connection.query('SELECT * FROM Licenses', function (error, rows, fields){
+            if(error){
+                console.log(error)
+            } else{
+                response.ok(rows, res)
+            }
+        });
+    }catch(err){
+        response.clientError("Bad Request",res);
+    }
 };
 
 exports.createLicenses = function(req, res) {
@@ -23,15 +27,19 @@ exports.createLicenses = function(req, res) {
     var credential = req.body.credential;
     var user_id = req.body.user_id;
 
-    connection.query('INSERT INTO Licenses (name, issue_date, exp_date, organization, description, credential, user_id) values (?,?,?,?,?,?,?)',
-    [ name, issue_date, exp_date, organization, description, credential, user_id ], 
-    function (error, rows, fields){
-        if(error){
-            console.log(error)
-        } else{
-            response.ok("Berhasil menambahkan user!", res)
-        }
-    });
+    try{
+        connection.query('INSERT INTO Licenses (name, issue_date, exp_date, organization, description, credential, user_id) values (?,?,?,?,?,?,?)',
+        [ name, issue_date, exp_date, organization, description, credential, user_id ], 
+        function (error, rows, fields){
+            if(error){
+                response.internalError(error.code, res);
+            } else{
+                response.ok("Operation Success!", res)
+            }
+        });
+    }catch(err){
+        response.clientError("Bad Request",res);
+    }
 };
 
 

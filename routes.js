@@ -21,6 +21,8 @@ module.exports = function(app) {
         res.send("Homepage")
     });
 
+
+    // user
     app.route('/user/register')
         .post(users.createUsers);
 
@@ -30,6 +32,8 @@ module.exports = function(app) {
     app.route('/user/token')
         .put(users.updateToken);
 
+    
+    // project
     app.route('/projects')
         .get(projects.readProjects);
 
@@ -42,6 +46,8 @@ module.exports = function(app) {
     app.route('/project/:id')
         .delete(projects.deleteProjects)
 
+
+    // collaborators
     app.route('/project/:id/apply')
         .post(collaborators.createCollaborators)
 
@@ -53,5 +59,68 @@ module.exports = function(app) {
     
     app.route('/project/:id/applicant/reject')
         .delete(collaborators.deleteCollaborators)
+
     
+    // experiences
+    app.route('/user/experiences/register')
+        .post(experiences.createExperiences)
+
+    app.route('/user/experiences/')
+        .get(experiences.readExperiences)
+    
+
+    // skills
+    app.route('/user/skills/register')
+        .post(skills.createSkills)
+
+    app.route('/user/skills/')
+        .get(skills.readSkills)
+
+
+    // portfolios
+    app.route('/user/portfolios/register')
+        .post(portfolios.createPortfolios)
+
+    app.route('/user/portfolios/')
+        .get(portfolios.readPortfolios)
+    
+
+    // licenses
+    app.route('/user/licenses/register')
+        .post(licenses.createLicenses)
+
+    app.route('/user/licenses/')
+        .get(licenses.readLicenses)
+
+
+    // roles
+    app.route('/collab/:id/roles/register')
+        .post(roles.createRoles)
+
+    app.route('/collab/:id/roles/')
+        .get(roles.readRoles)
+
+
+    // comments
+    app.route('/project/:id/comments/register')
+        .post(comments.createComments)
+
+    app.route('/project/:id/comments/')
+        .get(comments.readComments)
+
+
+    // chats
+    app.route('/user/:id/chats/register')
+        .post(chats.createChats)
+
+    app.route('/user/:id/chats/')
+        .get(chats.readChats)
+
+
+    // joinedProjects
+    app.route('/joined/register/')
+        .post(joinedProjects.createJoinedProjects)
+
+    app.route('/joined/')
+        .get(joinedProjects.readJoinedProjects)
 };

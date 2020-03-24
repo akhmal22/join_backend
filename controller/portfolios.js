@@ -4,13 +4,17 @@ var response = require('../res');
 var connection = require('../conn');
 
 exports.readPortfolios = function(req, res) {
-    connection.query('SELECT * FROM Portfolios', function (error, rows, fields){
-        if(error){
-            console.log(error)
-        } else{
-            response.ok(rows, res)
-        }
-    });
+    try{
+        connection.query('SELECT * FROM Portfolios', function (error, rows, fields){
+            if(error){
+                console.log(error)
+            } else{
+                response.ok(rows, res)
+            }
+        });
+    }catch(err){
+        response.clientError("Bad Request",res);
+    }
 };
 
 exports.createPortfolios = function(req, res) {
@@ -22,15 +26,19 @@ exports.createPortfolios = function(req, res) {
     var url = req.body.url;
     var user_id = req.body.user_id;
 
-    connection.query('INSERT INTO Portfolios (name, description, start_date, end_date, url, user_id) values (?,?,?,?,?,?)',
-    [ name, description, start_date, end_date, url, user_id ], 
-    function (error, rows, fields){
-        if(error){
-            console.log(error)
-        } else{
-            response.ok("Berhasil menambahkan user!", res)
-        }
-    });
+    try{
+        connection.query('INSERT INTO Portfolios (name, description, start_date, end_date, url, user_id) values (?,?,?,?,?,?)',
+        [ name, description, start_date, end_date, url, user_id ], 
+        function (error, rows, fields){
+            if(error){
+                response.internalError(error.code, res);
+            } else{
+                response.ok("Operation Success!", res)
+            }
+        });
+    }catch(err){
+        response.clientError("Bad Request",res);
+    }
 };
 
 
