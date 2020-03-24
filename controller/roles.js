@@ -22,7 +22,7 @@ exports.createRoles = function(req, res) {
     var name = req.body.name;
     var description = req.body.description;
     var project_id = req.body.project_id;
-    var collaborator_id = req.params.id;
+    var collaborator_id = req.body.collaborator_id;
 
     try {
         connection.query('INSERT INTO Roles (name, description, project_id, collaborator_id) values (?,?,?,?)',
@@ -44,32 +44,38 @@ exports.updateRoles = function(req, res) {
     
     var name = req.body.name;
     var description = req.body.description;
-    var project_id = req.body.project_id;
-    var collaborator_id = req.body.collaborator_id;
-    var id = req.body.id;
+    var id = req.params.id;
 
-    connection.query('UPDATE Roles SET name = ?, description = ?, project_id = ?, collaborator_id = ? WHERE id = ?',
-    [ name, description, project_id, collaborator_id, id ], 
-    function (error, rows, fields){
-        if(error){
-            console.log(error)
-        } else{
-            response.ok("Berhasil merubah user!", res)
-        }
-    });
+    try{
+        connection.query('UPDATE Roles SET name = ?, description = ? WHERE id = ?',
+        [ name, description, id ], 
+        function (error, rows, fields){
+            if(error){
+                response.internalError(error.code, res);
+            } else{
+                response.ok("Berhasil merubah user!", res)
+            }
+        });
+    }catch(err){
+        response.clientError("Bad Request", res);
+    }
 };
 
 exports.deleteRoles = function(req, res) {
     
-    var id = req.body.id;
+    var id = req.params.id;
 
-    connection.query('DELETE FROM Roles WHERE id = ?',
-    [ id ], 
-    function (error, rows, fields){
-        if(error){
-            console.log(error)
-        } else{
-            response.ok("Berhasil menghapus user!", res)
-        }
-    });
+    try{
+        connection.query('DELETE FROM Roles WHERE id = ?',
+        [ id ], 
+        function (error, rows, fields){
+            if(error){
+                response.internalError(error.code, res);
+            } else{
+                response.ok("Berhasil menghapus user!", res)
+            }
+        });
+    }catch(err){
+        response.clientError("Bad Request", res);
+    }
 };

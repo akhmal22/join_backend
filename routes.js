@@ -61,10 +61,10 @@ module.exports = function(app) {
     app.route('/project/:id/applicant')
         .get(collaborators.readCollaborators)
 
-    app.route('/project/:id/applicant/accept')
+    app.route('/project/applicant/:id/accept')
         .put(collaborators.updateCollaborators)
     
-    app.route('/project/:id/applicant/reject')
+    app.route('/project/applicant/:id/reject')
         .delete(collaborators.deleteCollaborators)
 
     
@@ -125,16 +125,16 @@ module.exports = function(app) {
 
 
     // roles
-    app.route('/collab/:id/roles/register')
+    app.route('/roles/register')
         .post(roles.createRoles)
 
-    app.route('/collab/:id/roles/')
+    app.route('/roles/')
         .get(roles.readRoles)
 
-    app.route('/user/roles/:id')
+    app.route('/roles/:id')
         .put(roles.updateRoles)
 
-    app.route('/user/roles/:id')
+    app.route('/roles/:id')
         .delete(roles.deleteRoles)
 
 
@@ -145,10 +145,10 @@ module.exports = function(app) {
     app.route('/project/:id/comments/')
         .get(comments.readComments)
 
-    app.route('/project/:id/comments/:id')
+    app.route('/project/comments/:id')
         .put(comments.updateComments)
 
-    app.route('/project/:id/comments/:id')
+    app.route('/project/comments/:id')
         .delete(comments.deleteComments)
 
 
@@ -159,10 +159,7 @@ module.exports = function(app) {
     app.route('/user/:id/chats/')
         .get(chats.readChats)
 
-    app.route('/user/:id/chats/:id')
-        .put(chats.updateChats)
-
-    app.route('/user/:id/chats/:id')
+    app.route('/user/chats/:id')
         .delete(chats.deleteChats)
 
 
@@ -172,9 +169,6 @@ module.exports = function(app) {
 
     app.route('/joined/')
         .get(joinedProjects.readJoinedProjects)
-
-    app.route('/joined/:id')
-        .put(joinedProjects.updateJoinedProjects)
 
     app.route('/joined/:id')
         .delete(joinedProjects.deleteJoinedProjects)

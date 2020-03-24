@@ -26,7 +26,7 @@ exports.createCollaborators = function(req, res) {
     var user_id = req.body.user_id;
 
     try{
-        conection.query('INSERT INTO Collaborators (status, project_id, user_id) values (?,?,?)',
+        connection.query('INSERT INTO Collaborators (status, project_id, user_id) values (?,?,?)',
         [ status, project_id, user_id ], 
         function (error, rows, fields){
             if(error){
@@ -36,7 +36,7 @@ exports.createCollaborators = function(req, res) {
             }
         });
     }catch(err){
-        response.clientError("Bad Request",res)
+        response.clientError("Bad Request",res);
     }
 };
 
@@ -44,32 +44,38 @@ exports.createCollaborators = function(req, res) {
 exports.updateCollaborators = function(req, res) {
     
     var status = req.body.status;
-    var project_id = req.params.id;
-    var user_id = req.body.user_id;
-    var id = req.body.id;
+    var id = req.params.id;
 
-    connection.query('UPDATE Collaborators SET status = ?, project_id = ?, user_id = ? WHERE id = ?',
-    [ status, project_id, user_id, id ], 
-    function (error, rows, fields){
-        if(error){
-            response.internalError(error.code);
-        } else{
-            response.ok("Berhasil merubah user!", res);
-        }
-    });
+    try{
+        connection.query('UPDATE Collaborators SET status = ? WHERE id = ?',
+        [ status, id ], 
+        function (error, rows, fields){
+            if(error){
+                response.internalError(error.code);
+            } else{
+                response.ok("Berhasil merubah user!", res);
+            }
+        });
+    }catch(err){
+        response.clientError("Bad Request",res);
+    }
 };
 
 exports.deleteCollaborators = function(req, res) {
     
-    var id = req.body.id;
+    var id = req.params.id;
 
-    connection.query('DELETE FROM Collaborators WHERE id = ?',
-    [ id ], 
-    function (error, rows, fields){
-        if(error){
-            response.internalError(error.code);
-        } else{
-            response.ok("Berhasil menghapus user!", res);
-        }
-    });
+    try{
+        connection.query('DELETE FROM Collaborators WHERE id = ?',
+        [ id ], 
+        function (error, rows, fields){
+            if(error){
+                response.internalError(error.code,res);
+            } else{
+                response.ok("Berhasil menghapus user!", res);
+            }
+        });
+    }catch(err){
+        response.clientError("Bad Request",res);
+    }
 };

@@ -41,28 +41,9 @@ exports.createChats = function(req, res) {
     }
 };
 
-
-exports.updateChats = function(req, res) {
-    
-    var message = req.body.message;
-    var recipient_id = req.body.recipient_id;
-    var sender_id = req.body.sender_id;
-    var id = req.body.id;
-
-    connection.query('UPDATE Chats SET message = ?, recipient_id = ?, sender_id = ? WHERE id = ?',
-    [ message, recipient_id, sender_id, id ], 
-    function (error, rows, fields){
-        if(error){
-            console.log(error)
-        } else{
-            response.ok("Berhasil merubah user!", res)
-        }
-    });
-};
-
 exports.deleteChats = function(req, res) {
     
-    var id = req.body.id;
+    var id = req.params.id;
 
     connection.query('DELETE FROM Chats WHERE id = ?',
     [ id ], 

@@ -33,11 +33,11 @@ exports.createComments = function(req, res) {
             if(error){
                 response.internalError(error.code, res);
             } else{
-                response.ok("Berhasil menambahkan user!", res)
+                response.ok("Berhasil menambahkan user!", res);
             }
         });
     }catch(err){
-        response.clientError("Bad Request", res) 
+        response.clientError("Bad Request", res);
     }
 };
 
@@ -45,25 +45,26 @@ exports.createComments = function(req, res) {
 exports.updateComments = function(req, res) {
     
     var comment = req.body.comment;
-    var date_created = req.body.date_created;
-    var user_id = req.body.user_id;
-    var project_id = req.body.project_id;
-    var id = req.body.id;
+    var id = req.params.id;
 
-    connection.query('UPDATE Comments SET comment = ?, date_created = ?, user_id = ?, project_id = ? WHERE id = ?',
-    [ comment, date_created, user_id, project_id, id ], 
-    function (error, rows, fields){
-        if(error){
-            console.log(error)
-        } else{
-            response.ok("Berhasil merubah user!", res)
-        }
-    });
+    try{
+        connection.query('UPDATE Comments SET comment = ?, date_modified = CURRENT_TIMESTAMP WHERE id = ?',
+        [ comment, id ], 
+        function (error, rows, fields){
+            if(error){
+                response.internalError(error.code, res);
+            } else{
+                response.ok("Berhasil merubah user!", res)
+            }
+        });
+    }catch(err){
+        response.clientError("Bad Request", res);
+    }
 };
 
 exports.deleteComments = function(req, res) {
     
-    var id = req.body.id;
+    var id = req.params.id;
 
     connection.query('DELETE FROM Comments WHERE id = ?',
     [ id ], 
