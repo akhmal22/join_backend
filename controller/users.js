@@ -19,17 +19,39 @@ var generateAuthToken = (un) => {
 }
 
 exports.readUsers = function(req, res) {
-    connection.query('SELECT * FROM Users', function (error, rows, fields){
-        if(error){
-            console.log(error)
-        } else{
-            response.ok(rows, res)
-        }
-    });
+    try{
+        connection.query('SELECT * FROM Users', function (error, rows, fields){
+            if(error){
+                response.internalError(error, res);
+            } else{
+                response.ok(rows, res)
+            }
+        });
+    }catch(err){
+        response.clientError('Bad Request', res);
+    }
 };
 
+exports.readOneUser = function(req, res) {
+    var username = req.params.username;
+
+    try{
+        connection.query('SELECT * FROM Users WHERE username LIKE ?',
+        [ username ],
+        function(error, rows, fields){
+            if(error){
+                response.internalError(error, res);
+            }else{
+                response.ok(rows, res);
+            }
+        });
+    }catch(err){
+        response.clientError('Bad Request', res);
+    }
+}
+
 exports.createUsers = function(req, res) {
-    
+
     var full_name = req.body.full_name;
     var phone = req.body.phone;
     var email = req.body.email;
@@ -44,7 +66,7 @@ exports.createUsers = function(req, res) {
     try {
         // INSERT INTO query
         connection.query('INSERT INTO Users (full_name, phone, email, password, organization, position, username, token) values (?,?,?,?,?,?,?,?)',
-        [ full_name, phone, email, hashPasswd, organization, position, username, token ], 
+        [ full_name, phone, email, hashPasswd, organization, position, username, token ],
         function (error, rows, fields){
             if(error){
                 // error to the log
@@ -53,7 +75,6 @@ exports.createUsers = function(req, res) {
                 // success message
                 response.ok("Operation Success", res);
             }
-            console.log(error)
         });
     } catch (error){
         response.clientError("Bad Request",res);
@@ -62,7 +83,7 @@ exports.createUsers = function(req, res) {
 
 
 exports.updateUsers = function(req, res) {
-    
+
     var full_name = req.body.full_name;
     var phone = req.body.phone;
     var email = req.body.email;
@@ -76,7 +97,7 @@ exports.updateUsers = function(req, res) {
 
     try{
         connection.query('UPDATE Users SET full_name = ?, phone = ?, email = ?, password = ?, avatar = ?, status = ?, organization = ?, position = ?, username = ? WHERE id = ?',
-        [ full_name, phone, email, password, avatar, status, organization, position, username, id ], 
+        [ full_name, phone, email, password, avatar, status, organization, position, username, id ],
         function (error, rows, fields){
             if(error){
                 response.internalError(error.code, res);
@@ -90,12 +111,12 @@ exports.updateUsers = function(req, res) {
 };
 
 exports.deleteUsers = function(req, res) {
-    
+
     var id = req.body.id;
 
     try{
         connection.query('DELETE FROM Users WHERE id = ?',
-        [ id ], 
+        [ id ],
         function (error, rows, fields){
             if(error){
                 response.internalError(error.code, res);

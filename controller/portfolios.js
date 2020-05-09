@@ -4,8 +4,11 @@ var response = require('../res');
 var connection = require('../conn');
 
 exports.readPortfolios = function(req, res) {
+    var user_id = req.params.user_id;
+
     try{
-        connection.query('SELECT * FROM Portfolios', function (error, rows, fields){
+        connection.query('SELECT * FROM Portfolios WHERE user_id = ?', [user_id]
+        ,function (error, rows, fields){
             if(error){
                 console.log(error)
             } else{
@@ -18,7 +21,7 @@ exports.readPortfolios = function(req, res) {
 };
 
 exports.createPortfolios = function(req, res) {
-    
+
     var name = req.body.name;
     var description = req.body.description;
     var start_date = req.body.start_date;
@@ -28,7 +31,7 @@ exports.createPortfolios = function(req, res) {
 
     try{
         connection.query('INSERT INTO Portfolios (name, description, start_date, end_date, url, user_id) values (?,?,?,?,?,?)',
-        [ name, description, start_date, end_date, url, user_id ], 
+        [ name, description, start_date, end_date, url, user_id ],
         function (error, rows, fields){
             if(error){
                 response.internalError(error.code, res);
@@ -43,18 +46,17 @@ exports.createPortfolios = function(req, res) {
 
 
 exports.updatePortfolios = function(req, res) {
-    
+
     var name = req.body.name;
     var description = req.body.description;
     var start_date = req.body.start_date;
     var end_date = req.body.end_date;
     var url = req.body.url;
-    var user_id = req.body.user_id;
     var id = req.params.id;
 
     try {
-        connection.query('UPDATE Portfolios SET name = ?, description = ?, start_date = ?, end_date = ?, url = ?, user_id = ? WHERE id = ?',
-        [ name, description, start_date, end_date, url, user_id, id ], 
+        connection.query('UPDATE Portfolios SET name = ?, description = ?, start_date = ?, end_date = ?, url = ? WHERE id = ?',
+        [ name, description, start_date, end_date, url, id ],
         function (error, rows, fields){
             if(error){
                 response.internalError(error.code, res);
@@ -68,12 +70,12 @@ exports.updatePortfolios = function(req, res) {
 };
 
 exports.deletePortfolios = function(req, res) {
-    
+
     var id = req.params.id;
 
     try{
         connection.query('DELETE FROM Portfolios WHERE id = ?',
-        [ id ], 
+        [ id ],
         function (error, rows, fields){
             if(error){
                 response.internalError(error.code, res);

@@ -1,0 +1,51 @@
+A1
+create project (post)[project]
+view owned project (get)[project]
+list of owned project (get)[project]
+edit project (put)[project]
+view application (get)[collaborators/joinedProject]
+accept/reject application (put/delete)[collaborators]
+accept/reject join application (post)[joinedProject]
+delete project (delete)[project]
+
+A2
+Top project (get)[project]
+Search Navbar (get)[project]
+Search Filter (get)[project]
+
+A3
+View other's project detail (get)[project]
+Apply to project (post)[collaborators]
+
+A4
+View other's project detail (get)[project]
+Commenting (post)[comment]
+chat (post)[chat]
+
+A5
+View other's project detail (get)[project]
+Apply to join project (put)[project]
+
+A6
+View Self Profile (get)[user]
+Edit Profile (put)[user]
+Delete Profile (delete)[user]
+Deactivate Profile (put)[user]
+
+A7
+View Report (get)[reportU & reportP]
+Reported Project (get)[reportP]
+Reported User (get)[reportU]
+Approve/disapprove Report (put/delete)[reportP & reportU]
+
+A8
+List of Approved Report (get)[reportU & reportP]
+Ban user (put)[user]
+Suspend project (put)[project]
+Delete user (delete)[user]
+Delete project (delete)[project]
+
+A9
+View other's project (get)[project]
+Report Project (post)[reportP]
+Report user (post)[reportU]

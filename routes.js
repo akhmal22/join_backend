@@ -13,22 +13,301 @@ module.exports = function(app) {
     var comments = require('./controller/comments');
     var collaborators = require('./controller/collaborators');
     var chats = require('./controller/chats');
+    var reportP = require('./controller/reportP');
+    var reportU = require('./controller/reportU');
 
     // backend root
     app.get('/', function(req, res){
         res.send("Homepage")
     });
 
+    // == Prerequisites ==
 
-    // user
-    app.route('/users')
-        .get(users.readUsers);
-    
+    // login
+    app.route('/user/login')
+        .post(users.loginUsers);
+
+    // register
     app.route('/user/register')
         .post(users.createUsers);
 
-    app.route('/user/login')
-        .post(users.loginUsers);
+    // == endof Prerequisites ==
+
+
+    // == A1 Manage project ==
+
+    // == endof A1 Manage project ==
+
+    // == A2 Search for Project ==
+
+    // == endof A2 Search for Project ==
+
+    // == A3 Apply to Project ==
+
+    // == endof A3 Apply to Project ==
+
+    // == A4 Ask about Project ==
+
+    // == endof A4 Ask about Project ==
+
+    // == A5 Apply to Join Project ==
+
+    // add joinedProject
+
+    // == endof A5 Apply to Join Project ==
+
+    // == A6 Manage Profile ==
+
+    // == endof A6 Manage Profile ==
+
+    // == A7 Manage Report ==
+
+    // == endof A7 Manage Report ==
+
+    // == A8 Follow-up Report ==
+
+    // == endof A8 Follow-up Report ==
+
+    // == A9 Report User/Project ==
+
+    // == endof A9 Report User/Project ==
+
+    // === endof routes ===
+
+
+    // === STASH ===
+
+    // === Chats ===
+
+    // read chats
+    app.route('/chat/owned/:id')
+        .get(chats.readChats);
+
+    // send chat
+    app.route('/chat/to/:recipient_id')
+        .post(chats.postChats);
+
+    // === endof Chats ===
+
+    // === Comments ===
+
+    // read comment
+    app.route('/comment/:project_id')
+        .get(comments.readComments);
+
+    // post comment
+    app.route('/comment/post')
+        .post(comments.createComments);
+
+    // delete comment
+    app.route('/comment/:id')
+        .delete(comments.deleteComments);
+
+    // === endof Comments ===
+
+    // === Collaborators ===
+
+    app.route('/project/:id/collaborators')
+        .get(collaborators.readCollaborators);
+
+    app.route('/project/:id/collaboratorcount')
+        .get(collaborators.countCollaborators);
+
+    app.route('/project/:id/collaborator/register')
+        .post(collaborators.createCollaborators);
+
+    app.route('/collaborator/:id')
+        .put(collaborators.updateCollaboratorsStatus);
+
+    app.route('/collaborator/:id')
+        .delete(collaborators.deleteCollaborators);
+
+    app.route('/collaborators')
+        .get(collaborators.readAllCollaborators);
+
+    // === endof Collaborators ===
+
+    // === Experiences ===
+
+    app.route('/user/:id/experiences')
+        .get(experiences.readExperiences);
+
+    app.route('/user/experience')
+        .post(experiences.createExperiences);
+
+    app.route('/user/experience/:id')
+        .put(experiences.updateExperiences);
+
+    app.route('/user/experience/:id')
+        .delete(experiences.deleteExperiences);
+
+    // === endof Experiences ===
+
+    // === JoinedProject ===
+
+    app.route('/joined/register')
+        .post(joinedProjects.createJoinedProjects);
+
+    app.route('/joined/')
+        .get(joinedProjects.readJoinedProjects);
+
+    app.route('/joined/:id')
+        .delete(joinedProjects.deleteJoinedProjects);
+
+    // === endof JoinedProject ===
+
+    // === Licenses ===
+
+    app.route('/user/:user_id/licenses')
+        .get(licenses.readLicenses);
+
+    app.route('/user/license')
+        .post(licenses.createLicenses);
+
+    app.route('/user/license/:id')
+        .put(licenses.updateLicenses);
+
+    app.route('/user/license/:id')
+        .delete(licenses.deleteLicenses);
+
+    // === endof Licenses ===
+
+    // === Portfolios ===
+
+    app.route('/user/:user_id/portfolios')
+        .get(portfolios.readPortfolios);
+
+    app.route('/user/portfolio')
+        .post(portfolios.createPortfolios);
+
+    app.route('/user/portfolio/:id')
+        .put(portfolios.updatePortfolios);
+
+    app.route('/user/portfolio/:id')
+        .delete(portfolios.deletePortfolios);
+
+    // === endof Portfolios ===
+
+    // === Projects ===
+
+    // view owned project (get)[project]
+    app.route('/project/:id')
+        .get(projects.readOneProject);
+
+    // list of owned project (get)[project]
+    app.route('/projects/:user_id')
+        .get(projects.readOwnedProjects);
+
+    // create project (post)[project]
+    app.route('/project/register')
+        .post(projects.createProjects)
+
+    // edit project (put)[project]
+    app.route('/project/:id/description')
+        .put(projects.updateDescription);
+
+    app.route('/project/:id/start')
+        .put(projects.updateStartDate);
+
+    app.route('/project/:id/end')
+        .put(projects.updateEndDate);
+
+    app.route('/project/:id/due')
+        .put(projects.updateDueDate);
+
+    app.route('/project/:id/reqcoll')
+        .put(projects.updateColl);
+
+    app.route('/project/:id/status')
+        .put(projects.updateStatus);
+
+    // delete project (delete)[project]
+    app.route('/project/:id')
+        .delete(projects.deleteProjects)
+
+    // debugging purposes
+    app.route('/projects')
+        .get(projects.readAllProjects);
+
+    // === endof project ===
+
+    // === ReportP ===
+
+    app.route('/report/projects')
+        .get(reportP.readReportP);
+
+    app.route('/report/project/:id')
+        .get(reportP.readOneReportP);
+
+    app.route('/report/project')
+        .post(reportP.createReportP);
+
+    app.route('/report/project/:id')
+        .delete(reportP.deleteReportP);
+
+    // === endof ReportP ===
+
+    // === ReportU ===
+
+    app.route('/report/users')
+        .get(reportU.readReportU);
+
+    app.route('/report/user/:id')
+        .get(reportU.readOneReportU);
+
+    app.route('/report/user')
+        .post(reportU.createReportU);
+
+    app.route('/report/user/:id')
+        .delete(reportU.deleteReportU);
+
+    // === endof ReportU ===
+
+    // === Roles ===
+
+    app.route('/project/:project_id/roles')
+        .get(roles.readRolesOnProject);
+
+    app.route('/roles')
+        .get(roles.readRoles);
+
+    app.route('/role/register')
+        .post(roles.createRoles);
+
+    app.route('/role/:id')
+        .put(roles.updateRoles);
+
+    app.route('/role/:id')
+        .delete(roles.deleteRoles);
+
+    // === endof Roles ===
+
+    // === Skills ===
+
+    app.route('/user/:user_id/skills')
+        .get(skills.readUserSkills);
+
+    app.route('/user/skill')
+        .post(skills.createSkills);
+
+    app.route('/user/skill/:id')
+        .put(skills.updateSkills);
+
+    app.route('/user/skill/:id')
+        .delete(skills.deleteSkills);
+
+    app.route('/user/skills')
+        .get(skills.readSkills);
+
+    // === endof Skills ===
+
+    // === Users ===
+
+    app.route('/users')
+        .get(users.readUsers);
+
+    app.route('/user/:username')
+        .get(users.readOneUser);
 
     app.route('/user/token')
         .put(users.updateToken);
@@ -39,137 +318,6 @@ module.exports = function(app) {
     app.route('/user/:id')
         .delete(users.deleteUsers);
 
-    
-    // project
-    app.route('/projects')
-        .get(projects.readProjects);
+    // === endof Users ===
 
-    app.route('/project/register')
-        .post(projects.createProjects)
-
-    app.route('/project/:id')
-        .put(projects.updateProjects)
-
-    app.route('/project/:id')
-        .delete(projects.deleteProjects)
-
-
-    // collaborators
-    app.route('/project/:id/apply')
-        .post(collaborators.createCollaborators)
-
-    app.route('/project/:id/applicant')
-        .get(collaborators.readCollaborators)
-
-    app.route('/project/applicant/:id/accept')
-        .put(collaborators.updateCollaborators)
-    
-    app.route('/project/applicant/:id/reject')
-        .delete(collaborators.deleteCollaborators)
-
-    
-    // experiences
-    app.route('/user/experiences/register')
-        .post(experiences.createExperiences)
-
-    app.route('/user/experiences/')
-        .get(experiences.readExperiences)
-
-    app.route('/user/experiences/:id')
-        .put(experiences.updateExperiences)
-
-    app.route('/user/experiences/:id')
-        .delete(experiences.deleteExperiences)
-    
-
-    // skills
-    app.route('/user/skills/register')
-        .post(skills.createSkills)
-
-    app.route('/user/skills/')
-        .get(skills.readSkills)
-
-    app.route('/user/skills/:id')
-        .put(skills.updateSkills)
-
-    app.route('/user/skills/:id')
-        .delete(skills.deleteSkills)
-
-
-    // portfolios
-    app.route('/user/portfolios/register')
-        .post(portfolios.createPortfolios)
-
-    app.route('/user/portfolios/')
-        .get(portfolios.readPortfolios)
-
-    app.route('/user/portfolios/:id')
-        .put(portfolios.updatePortfolios)
-
-    app.route('/user/portfolios/:id')
-        .delete(portfolios.deletePortfolios)
-    
-
-    // licenses
-    app.route('/user/licenses/register')
-        .post(licenses.createLicenses)
-
-    app.route('/user/licenses/')
-        .get(licenses.readLicenses)
-
-    app.route('/user/licenses/:id')
-        .put(licenses.updateLicenses)
-
-    app.route('/user/licenses/:id')
-        .delete(licenses.deleteLicenses)
-
-
-    // roles
-    app.route('/roles/register')
-        .post(roles.createRoles)
-
-    app.route('/roles/')
-        .get(roles.readRoles)
-
-    app.route('/roles/:id')
-        .put(roles.updateRoles)
-
-    app.route('/roles/:id')
-        .delete(roles.deleteRoles)
-
-
-    // comments
-    app.route('/project/:id/comments/register')
-        .post(comments.createComments)
-
-    app.route('/project/:id/comments/')
-        .get(comments.readComments)
-
-    app.route('/project/comments/:id')
-        .put(comments.updateComments)
-
-    app.route('/project/comments/:id')
-        .delete(comments.deleteComments)
-
-
-    // chats
-    app.route('/user/:id/chats/register')
-        .post(chats.createChats)
-
-    app.route('/user/:id/chats/')
-        .get(chats.readChats)
-
-    app.route('/user/chats/:id')
-        .delete(chats.deleteChats)
-
-
-    // joinedProjects
-    app.route('/joined/register/')
-        .post(joinedProjects.createJoinedProjects)
-
-    app.route('/joined/')
-        .get(joinedProjects.readJoinedProjects)
-
-    app.route('/joined/:id')
-        .delete(joinedProjects.deleteJoinedProjects)
 };

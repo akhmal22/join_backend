@@ -18,7 +18,7 @@ exports.readJoinedProjects = function(req, res) {
 };
 
 exports.createJoinedProjects = function(req, res) {
-    
+
     var name = req.body.name;
     var description = req.body.description;
     var parent_id = req.body.parent_id;
@@ -30,42 +30,42 @@ exports.createJoinedProjects = function(req, res) {
     try{
         if(parent_idd && parent_idc){
             connection.query('INSERT INTO JoinedProjects (name, description, parent_id, parent_idb, parent_idc, parent_idd, child_id) values (?,?,?,?,?,?,?)',
-            [ name, description, parent_id, parent_idb, parent_idc, parent_idd, child_id ], 
+            [ name, description, parent_id, parent_idb, parent_idc, parent_idd, child_id ],
             function (error, rows, fields){
                 if(error){
                     response.internalError(error.code, res);
                 } else{
-                    response.ok("Berhasil menambahkan user!", res)
+                    response.ok("Operation Success!", res)
                 }
             });
         }else if(!parent_idc && parent_idd){
             connection.query('INSERT INTO JoinedProjects (name, description, parent_id, parent_idb, parent_idd, child_id) values (?,?,?,?,?,?)',
-            [ name, description, parent_id, parent_idb, parent_idd, child_id ], 
+            [ name, description, parent_id, parent_idb, parent_idd, child_id ],
             function (error, rows, fields){
                 if(error){
                     response.internalError(error.code, res);
                 } else{
-                    response.ok("Berhasil menambahkan user!", res)
+                    response.ok("Operation Success!", res)
                 }
             });
         }else if(!parent_idd && parent_idc){
             connection.query('INSERT INTO JoinedProjects (name, description, parent_id, parent_idb, parent_idc, child_id) values (?,?,?,?,?,?)',
-            [ name, description, parent_id, parent_idb, parent_idc, child_id ], 
+            [ name, description, parent_id, parent_idb, parent_idc, child_id ],
             function (error, rows, fields){
                 if(error){
                     response.internalError(error.code, res);
                 } else{
-                    response.ok("Berhasil menambahkan user!", res)
+                    response.ok("Operation Success!", res)
                 }
             });
         }else{
             connection.query('INSERT INTO JoinedProjects (name, description, parent_id, parent_idb, child_id) values (?,?,?,?,?)',
-            [ name, description, parent_id, parent_idb, child_id ], 
+            [ name, description, parent_id, parent_idb, child_id ],
             function (error, rows, fields){
                 if(error){
                     response.internalError(error.code, res);
                 } else{
-                    response.ok("Berhasil menambahkan user!", res)
+                    response.ok("Operation Success!", res)
                 }
             });
         }
@@ -75,16 +75,16 @@ exports.createJoinedProjects = function(req, res) {
 };
 
 exports.deleteJoinedProjects = function(req, res) {
-    
+
     var id = req.params.id;
 
     connection.query('DELETE FROM JoinedProjects WHERE id = ?',
-    [ id ], 
+    [ id ],
     function (error, rows, fields){
         if(error){
             console.log(error)
         } else{
-            response.ok("Berhasil menghapus user!", res)
+            response.ok("Operation Success!", res)
         }
     });
 };

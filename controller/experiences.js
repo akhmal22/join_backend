@@ -4,8 +4,10 @@ var response = require('../res');
 var connection = require('../conn');
 
 exports.readExperiences = function(req, res) {
+    var id = req.params.id;
     try{
-        connection.query('SELECT * FROM Experiences', function (error, rows, fields){
+        connection.query('SELECT * FROM Experiences WHERE user_id = ?',[id]
+        , function (error, rows, fields){
             if(error){
                 console.log(error)
             } else{
@@ -18,7 +20,7 @@ exports.readExperiences = function(req, res) {
 };
 
 exports.createExperiences = function(req, res) {
-    
+
     var name = req.body.name;
     var company = req.body.company;
     var start_date = req.body.start_date;
@@ -28,10 +30,10 @@ exports.createExperiences = function(req, res) {
 
     try{
         connection.query('INSERT INTO Experiences (name, company, start_date, end_date, description, user_id) values (?,?,?,?,?,?)',
-        [ name, company, start_date, end_date, description, user_id ], 
+        [ name, company, start_date, end_date, description, user_id ],
         function (error, rows, fields){
             if(error){
-                response.internalError(error.code, res);
+                response.internalError(error, res);
             } else{
                 response.ok("Operation Success!", res)
             }
@@ -43,18 +45,17 @@ exports.createExperiences = function(req, res) {
 
 
 exports.updateExperiences = function(req, res) {
-    
+
     var name = req.body.name;
     var company = req.body.company;
     var start_date = req.body.start_date;
     var end_date = req.body.end_date;
     var description = req.body.description;
-    var user_id = req.body.user_id;
     var id = req.params.id;
 
     try{
-        connection.query('UPDATE Experiences SET name = ?, company = ?, start_date = ?, end_date = ?, description = ?, user_id = ? WHERE id = ?',
-        [ name, company, start_date, end_date, description, user_id, id ], 
+        connection.query('UPDATE Experiences SET name = ?, company = ?, start_date = ?, end_date = ?, description = ? WHERE id = ?',
+        [ name, company, start_date, end_date, description, id ],
         function (error, rows, fields){
             if(error){
                 response.internalError(error.code, res);
@@ -68,12 +69,12 @@ exports.updateExperiences = function(req, res) {
 };
 
 exports.deleteExperiences = function(req, res) {
-    
+
     var id = req.params.id;
 
     try{
         connection.query('DELETE FROM Experiences WHERE id = ?',
-        [ id ], 
+        [ id ],
         function (error, rows, fields){
             if(error){
                 response.internalError(error.code, res);
