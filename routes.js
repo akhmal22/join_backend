@@ -15,6 +15,9 @@ module.exports = function(app) {
     var chats = require('./controller/chats');
     var reportP = require('./controller/reportP');
     var reportU = require('./controller/reportU');
+    var cors = require('cors');
+
+    app.use(cors())
 
     // backend root
     app.get('/', function(req, res){
@@ -195,12 +198,15 @@ module.exports = function(app) {
         .get(projects.readOneProject);
 
     // list of owned project (get)[project]
-    app.route('/projects/:user_id')
+    app.route('/projects/:username')
         .get(projects.readOwnedProjects);
+
+    app.route('/projects')
+        .get(projects.readAllProjects);
 
     // create project (post)[project]
     app.route('/project/register')
-        .post(projects.createProjects)
+        .post(projects.createProjects, cors())
 
     // edit project (put)[project]
     app.route('/project/:id/description')
@@ -309,8 +315,13 @@ module.exports = function(app) {
     app.route('/user/:username')
         .get(users.readOneUser);
 
+/*
     app.route('/user/token')
         .put(users.updateToken);
+*/
+
+    app.route('/token/:username')
+        .get(users.getToken);
 
     app.route('/user/:id')
         .put(users.updateUsers);

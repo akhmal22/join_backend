@@ -35,3 +35,12 @@ exports.clientError = function(values, res) {
   res.json(data);
   res.end();
 }
+
+exports.credErr = function(values, res) {
+    var data = {
+        'status': 401,
+        'values': values
+    };
+    res.json(data);
+    res.end();
+}
