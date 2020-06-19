@@ -44,3 +44,12 @@ exports.credErr = function(values, res) {
     res.json(data);
     res.end();
 }
+
+exports.forbidden = function(values, res) {
+    var data = {
+        'status': 403,
+        'values': values
+    };
+    res.json(data);
+    res.end();
+}

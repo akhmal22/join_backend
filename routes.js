@@ -16,6 +16,7 @@ module.exports = function(app) {
     var reportP = require('./controller/reportP');
     var reportU = require('./controller/reportU');
     var cors = require('cors');
+    var jwt = require('jsonwebtoken');
 
     app.use(cors())
 
@@ -226,6 +227,9 @@ module.exports = function(app) {
 
     app.route('/project/:id/status')
         .put(projects.updateStatus);
+
+    app.route('/project/:id/')
+        .put(projects.updateProjects);
 
     // delete project (delete)[project]
     app.route('/project/:id')
