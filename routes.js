@@ -140,9 +140,6 @@ module.exports = function(app) {
         .post(experiences.createExperiences);
 
     app.route('/user/experience/:id')
-        .put(experiences.updateExperiences);
-
-    app.route('/user/experience/:id')
         .delete(experiences.deleteExperiences);
 
     // === endof Experiences ===
@@ -163,16 +160,16 @@ module.exports = function(app) {
     // === Licenses ===
 
     app.route('/user/:user_id/licenses')
-        .get(licenses.readLicenses);
+        .get(licenses.readUserLicenses);
 
     app.route('/user/license')
         .post(licenses.createLicenses);
 
     app.route('/user/license/:id')
-        .put(licenses.updateLicenses);
-
-    app.route('/user/license/:id')
         .delete(licenses.deleteLicenses);
+
+    app.route('/user/licenses')
+        .get(licenses.readLicenses);
 
     // === endof Licenses ===
 
@@ -183,9 +180,6 @@ module.exports = function(app) {
 
     app.route('/user/portfolio')
         .post(portfolios.createPortfolios);
-
-    app.route('/user/portfolio/:id')
-        .put(portfolios.updatePortfolios);
 
     app.route('/user/portfolio/:id')
         .delete(portfolios.deletePortfolios);
@@ -207,7 +201,7 @@ module.exports = function(app) {
 
     // create project (post)[project]
     app.route('/project/register')
-        .post(projects.createProjects, cors())
+        .post(projects.createProjects)
 
     // edit project (put)[project]
     app.route('/project/:id/description')
@@ -285,9 +279,6 @@ module.exports = function(app) {
         .post(roles.createRoles);
 
     app.route('/role/:id')
-        .put(roles.updateRoles);
-
-    app.route('/role/:id')
         .delete(roles.deleteRoles);
 
     // === endof Roles ===
@@ -297,11 +288,8 @@ module.exports = function(app) {
     app.route('/user/:user_id/skills')
         .get(skills.readUserSkills);
 
-    app.route('/user/skill')
+    app.route('/user/skill/')
         .post(skills.createSkills);
-
-    app.route('/user/skill/:id')
-        .put(skills.updateSkills);
 
     app.route('/user/skill/:id')
         .delete(skills.deleteSkills);

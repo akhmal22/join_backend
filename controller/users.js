@@ -77,7 +77,7 @@ exports.createUsers = function(req, res) {
         function (error, rows, fields){
             if(error){
                 // error to the log
-                response.internalError(error.code, res);
+                response.internalError(error, res);
             } else{
                 // success message
                 response.ok("Operation Success", res);
@@ -119,9 +119,9 @@ exports.updateUsers = function(req, res) {
                     [ full_name, hashPasswd, avatar, status, organization, position, id ],
                     function (error, rows, fields){
                         if(error){
-                            response.internalError(error.code, res);
+                            response.internalError(error, res);
                         } else{
-                            response.ok("Berhasil merubah user!", res)
+                            response.ok("Operation Success", res)
                         }
                     });
                 }
@@ -156,7 +156,7 @@ exports.deleteUsers = function(req, res) {
                         if(error){
                             response.internalError(error, res);
                         } else{
-                            response.ok("Berhasil menghapus user!", res)
+                            response.ok("Operation Success", res)
                         }
                     });
                 }
@@ -203,7 +203,7 @@ exports.loginUsers = function(req, res) {
                             [ token, username, getHashedPassword(password) ],
                             function(error, rows, fields) {
                                 if(error){
-                                    response.internalError("Operation Failed",res);
+                                    response.internalError(error, res);
                                 }
                             });
                             response.ok("logged in",res);
@@ -227,7 +227,7 @@ exports.getToken = function(req, res) {
         [ username ],
         function(error, rows, fields){
             if(error){
-                response.internalError("Internal server error",res);
+                response.internalError(error, res);
             }else{
                 response.ok(rows, res);
             }

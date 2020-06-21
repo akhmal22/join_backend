@@ -18,80 +18,127 @@ exports.readRoles = function(req, res) {
 };
 
 exports.readRolesOnProject = function(req, res) {
-    var project_id = req.params.project_id;
-    try{
-        connection.query('SELECT * FROM Roles WHERE project_id = ?', [project_id]
-        ,function (error, rows, fields){
-            if(error){
-                response.internalError(error.code, res);
-            } else{
-                response.ok(rows, res)
+    if(!req.headers.authorization){
+        response.credErr('Unauthorized', res);
+    }else{
+        var project_id = req.params.project_id;
+
+        var now = new Date();
+
+        var token = req.headers.authorization;
+        var decoded = header.jwt.decode(String(token).slice(String(token).lastIndexOf(' ') + 1), {complete: true});
+
+        try{
+            if(now.getTime()/1000>decoded.payload.exp){
+                response.credErr('Token Expired', res);
+            }else{
+                if(decoded.payload.user_id!=id){
+                    response.credErr('Access Denied',res);
+                }else{
+                    connection.query('SELECT * FROM Roles WHERE project_id = ?', [project_id]
+                    ,function (error, rows, fields){
+                        if(error){
+                            response.internalError(error, res);
+                        } else{
+                            response.ok(rows, res);
+                        }
+                    });
+                }
             }
-        });
-    }catch(err){
-        response.clientError("Bad Request",res)
-    }
-}
-
-exports.createRoles = function(req, res) {
-
-    var name = req.body.name;
-    var description = req.body.description;
-    var project_id = req.body.project_id;
-    var collaborator_id = req.body.collaborator_id;
-
-    try {
-        connection.query('INSERT INTO Roles (name, description, project_id, collaborator_id) values (?,?,?,?)',
-        [ name, description, project_id, collaborator_id ],
-        function (error, rows, fields){
-            if(error){
-                response.internalError(error.code, res);
-            } else{
-                response.ok("Operation Success!", res)
-            }
-        });
-    }catch(err){
-        response.clientError("Bad Request",res)
+        }catch(err){
+            response.clientError("Bad Request",res);
+        }
     }
 };
 
+exports.createRoles = function(req, res) {
+    if(!req.headers.authorization){
+        response.credErr('Unauthorized', res);
+    }else{
+        var name = req.body.name;
+        var description = req.body.description;
+        var project_id = req.body.project_id;
+        var collaborator_id = req.body.collaborator_id;
 
-exports.updateRoles = function(req, res) {
+        var now = new Date();
 
-    var name = req.body.name;
-    var description = req.body.description;
-    var id = req.params.id;
+        var token = req.headers.authorization;
+        var decoded = header.jwt.decode(String(token).slice(String(token).lastIndexOf(' ') + 1), {complete: true});
 
-    try{
-        connection.query('UPDATE Roles SET name = ?, description = ? WHERE id = ?',
-        [ name, description, id ],
-        function (error, rows, fields){
-            if(error){
-                response.internalError(error.code, res);
-            } else{
-                response.ok("Operation Success!", res)
+        try{
+            if(now.getTime()/1000>decoded.payload.exp){
+                response.credErr('Token Expired', res);
+            }else{
+                if(decoded.payload.user_id!=id){
+                    response.forbidden('forbidden',res);
+                }else{
+                    connection.query('INSERT INTO Roles (name, description, project_id, collaborator_id) values (?,?,?,?)',
+                    [ name, description, project_id, collaborator_id ],
+                    function (error, rows, fields){
+                        if(error){
+                            response.internalError(error, res);
+                        } else{
+                            response.ok("Operation Success!", res);
+                        }
+                    });
+                }
             }
-        });
-    }catch(err){
-        response.clientError("Bad Request", res);
+        }catch(err){
+            response.clientError("Bad Request",res);
+        }
     }
 };
 
 exports.deleteRoles = function(req, res) {
+    if(!req.headers.authorization){
+        response.credErr('Unauthorized', res);
+    }else{
+        var id = req.params.id;
 
-    var id = req.params.id;
+        var now = new Date();
 
-    try{
-        connection.query('DELETE FROM Roles WHERE id = ?',
-        [ id ],
-        function (error, rows, fields){
-            if(error){
-                response.internalError(error.code, res);
-            } else{
-                response.ok("Operation Success!", res)
+        var token = req.headers.authorization;
+        var decoded = header.jwt.decode(String(token).slice(String(token).lastIndexOf(' ') + 1), {complete: true});
+
+        try{
+            if(now.getTime()/1000>decoded.payload.exp){
+                response.credErr('Token Expired', res);
+            }else{
+                connection.query('SELECT project_id FROM Roles WHERE role_id = ?',
+                [ id ],
+                function(error, rows, field){
+                    if(error){
+                        next();
+                    }else{
+                        var project_id = String(rows[0].project_id);
+
+                        connection.query('SELECT user_id FROM Projects WHERE proj_id = ?',
+                        [ project_id ],
+                        function(error, rows, fields){
+                            if(error){
+                                next();
+                            }else{
+                                var owner_id = String(rows[0].user_id);
+                                if(decoded.payload.user_id!=owner_id){
+                                    response.credErr('Access Denied', res);
+                                }else{
+                                    connection.query('DELETE FROM Roles WHERE role_id = ?',
+                                    [ id ],
+                                    function (error, rows, fields){
+                                        if(error){
+                                            response.internalError(error, res)
+                                        } else{
+                                            response.ok("Operation Success", res)
+                                        }
+                                    });
+                                }
+                            }
+                        })
+                    }
+                });
             }
-        });
-    }catch(err){
-        response.clientError("Bad Request", res);
+        }catch(err){
+            response.clientError('Bad Request', res);
+        }
     }
 };
