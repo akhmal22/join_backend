@@ -18,7 +18,7 @@ module.exports = function(app) {
     var cors = require('cors');
     var jwt = require('jsonwebtoken');
 
-    app.use(cors())
+    app.use(cors({credentials: true, origin: 'http://localhost:3000'}))
 
     // backend root
     app.get('/', function(req, res){

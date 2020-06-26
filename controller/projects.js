@@ -59,7 +59,7 @@ exports.readOneProject = function(req, res) {
     var id = req.params.id;
 
     try{
-        connection.query('SELECT * FROM Projects WHERE id = ?',
+        connection.query('SELECT * FROM Projects WHERE proj_id = ?',
         [ id ],
         function(error, rows, fields){
             if(error){
