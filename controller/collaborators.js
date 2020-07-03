@@ -2,6 +2,7 @@
 
 var response = require('../res');
 var connection = require('../conn');
+var header = require('../header')
 
 exports.readCollaborators = function(req, res) {
     if(!req.headers.authorization){
@@ -50,6 +51,23 @@ exports.readCollaborators = function(req, res) {
 exports.readAllCollaborators = function(req, res) {
     try {
         connection.query('SELECT * FROM Collaborators', function (error, rows, fields){
+            if(error){
+                response.internalError(error.code);
+            } else{
+                response.ok(rows, res);
+            }
+        });
+    }catch(err){
+        response.clientError("Bad Request", res)
+    }
+};
+
+exports.readApplication = function(req, res) {
+    var proj_id = req.params.proj_id;
+
+    try {
+        connection.query('SELECT * FROM Collaborators WHERE project_id = ? AND status = 0',
+        [proj_id], function (error, rows, fields){
             if(error){
                 response.internalError(error.code);
             } else{

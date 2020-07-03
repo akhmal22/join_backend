@@ -20,39 +20,21 @@ exports.readExperiences = function(req, res) {
 };
 
 exports.readUserExperiences = function(req, res) {
-    if(!req.headers.authorization){
-        response.credErr('Unauthorized', res);
-    }else{
+    try{
         var user_id = req.params.user_id;
-
-        var now = new Date();
-
-        var token = req.headers.authorization;
-        var decoded = header.jwt.decode(String(token).slice(String(token).lastIndexOf(' ') + 1), {complete: true});
-
-        try{
-            if(now.getTime()/1000>decoded.payload.exp){
-                response.credErr('Token Expired', res);
-            }else{
-                if(decoded.payload.user_id!=id){
-                    response.credErr('Access Denied',res);
-                }else{
-                    connection.query('SELECT * FROM Experiences WHERE user_id = ?',
-                    [user_id],
-                    function (error, rows, fields){
-                        if(error){
-                            response.internalError(error, res);
-                        } else{
-                            response.ok(rows, res);
-                        }
-                    });
-                }
+        connection.query('SELECT * FROM Experiences WHERE user_id = ?',
+        [user_id],
+        function (error, rows, fields){
+            if(error){
+                response.internalError(error, res);
+            } else{
+                response.ok(rows, res);
             }
-        }catch(err){
-            response.clientError("Bad Request",res);
-        }
+        });
+    }catch(err){
+        response.clientError("Bad Request",res);
     }
-}
+};
 
 exports.createExperiences = function(req, res) {
     if(!req.headers.authorization){

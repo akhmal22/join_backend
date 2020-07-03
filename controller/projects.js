@@ -7,7 +7,7 @@ var header = require('../header');
 // debugging purposes, not tokenize
 exports.readAllProjects = function(req, res){
     try{
-        connection.query('SELECT proj_id, name, Projects.date_created, description, type, duration, num_req_collaborator, username FROM Projects LEFT JOIN Users ON Projects.user_id = Users.use_id',
+        connection.query('SELECT proj_id, name, Projects.date_created, Projects.description, type, duration, num_req_collaborator, username FROM Projects LEFT JOIN Users ON Projects.user_id = Users.use_id',
         function (error, rows, fields){
             if(error){
                 response.internalError(error, res);
@@ -54,12 +54,30 @@ exports.readOwnedProjects = function(req, res) {
     }
 };
 
+exports.readJoinRequest = function(req, res) {
+    var user_id = req.params.user_id;
+
+    try{
+        connection.query('SELECT join_request FROM Projects WHERE user_id = ?',
+        [ user_id ],
+        function (error, rows, fields){
+            if(error){
+                response.internalError(error, res);
+            } else{
+                response.ok(rows,res);
+            }
+        });
+    }catch(err){
+        response.clientError('Bad Request', res);
+    }
+}
+
 // tested, proper
 exports.readOneProject = function(req, res) {
     var id = req.params.id;
 
     try{
-        connection.query('SELECT * FROM Projects WHERE proj_id = ?',
+        connection.query('SELECT * FROM Projects LEFT JOIN Users ON Projects.user_id = Users.use_id WHERE proj_id = ?',
         [ id ],
         function(error, rows, fields){
             if(error){
@@ -178,6 +196,26 @@ exports.updateDescription = function(req, res) {
     try{
         connection.query('UPDATE Projects SET description = ?, date_modified = now() WHERE id = ?',
         [ description, id ],
+        function(error, rows, fields){
+            if(error){
+                response.internalError(error, res)
+            }else{
+                response.ok("Operation Success", res)
+            }
+        });
+    }catch(err){
+        response.clientError("Bad Request", res);
+    }
+};
+
+exports.updateJoinRequest = function(req, res) {
+
+    var requests = "requested";
+    var id = req.params.id;
+
+    try{
+        connection.query('UPDATE Projects SET join_request = ?, date_modified = now() WHERE proj_id = ?',
+        [ requests, id ],
         function(error, rows, fields){
             if(error){
                 response.internalError(error, res)

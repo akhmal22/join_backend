@@ -88,7 +88,7 @@ module.exports = function(app) {
         .get(chats.readChats);
 
     // send chat
-    app.route('/chat/to/:recipient_id')
+    app.route('/chat/new')
         .post(chats.postChats);
 
     // === endof Chats ===
@@ -128,6 +128,9 @@ module.exports = function(app) {
 
     app.route('/collaborators')
         .get(collaborators.readAllCollaborators);
+
+    app.route('/project/application/:proj_id')
+        .get(collaborators.readApplication);
 
     // === endof Collaborators ===
 
@@ -199,6 +202,9 @@ module.exports = function(app) {
     app.route('/projects')
         .get(projects.readAllProjects);
 
+    app.route('/project/:user_id/join_request')
+        .get(projects.readJoinRequest);
+
     // create project (post)[project]
     app.route('/project/register')
         .post(projects.createProjects)
@@ -209,6 +215,9 @@ module.exports = function(app) {
 
     app.route('/project/:id/start')
         .put(projects.updateStartDate);
+
+    app.route('/project/:id/request')
+        .put(projects.updateJoinRequest);
 
     app.route('/project/:id/end')
         .put(projects.updateEndDate);
