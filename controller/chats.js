@@ -2,11 +2,32 @@
 
 var response = require('../res');
 var connection = require('../conn');
+var header = require('../header');
 
 exports.readChats = function(req, res) {
-    var id = req.params.id;
+    if(!req.headers.authorization){
+        response.credErr('Unauthorized', res);
+    }else{
+        var id = req.params.id;
+        try{
+            connection.query('SELECT * FROM Chats WHERE recipient_id = ?',
+            [ id, id],
+            function (error, rows, fields){
+                if(error){
+                    response.internalError(error.code, res);
+                } else{
+                    response.ok(rows, res)
+                }
+            });
+        }catch(err){
+            response.clientError("Bad Request", res)
+        }
+    }
+};
+
+exports.readAllChats = function(req, res){
     try{
-        connection.query('SELECT * FROM Chats WHERE recipient_id = ? OR sender_id = ?',
+        connection.query('SELECT * FROM Chats',
         [ id, id],
         function (error, rows, fields){
             if(error){
@@ -18,25 +39,29 @@ exports.readChats = function(req, res) {
     }catch(err){
         response.clientError("Bad Request", res)
     }
-};
+}
 
 exports.postChats = function(req, res) {
+    if(!req.headers.authorization){
+        response.credErr('Unauthorized', res);
+    }else{
+        var message = req.body.message;
+        var recipient_username = req.body.recipient_username;
+        var sender_id = req.body.sender_id;
+        var sender_username = req.body.sender_username;
 
-    var message = req.body.message;
-    var recipient_id = req.params.recipient_id;
-    var sender_id = req.body.sender_id;
-
-    try{
-        connection.query('INSERT INTO Chats (message, recipient_id, sender_id) values (?,?,?)',
-        [ message, recipient_id, sender_id ],
-        function (error, rows, fields){
-            if(error){
-                response.internalError(error.code, res);
-            } else{
-                response.ok("Berhasil menambahkan user!", res)
-            }
-        });
-    }catch(err){
-        response.clientError("Bad Request", res)
+        try{
+            connection.query('INSERT INTO Chats (message, recipient_id, sender_id, sender_username) values (?,?,?,?)',
+            [ message, recipient_id, sender_id, sender_username ],
+            function (error, rows, fields){
+                if(error){
+                    response.internalError(error.code, res);
+                } else{
+                    response.ok("Operation Success", res)
+                }
+            });
+        }catch(err){
+            response.clientError("Bad Request", res)
+        }
     }
 };

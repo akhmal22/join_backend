@@ -18,7 +18,7 @@ module.exports = function(app) {
     var cors = require('cors');
     var jwt = require('jsonwebtoken');
 
-    app.use(cors())
+    app.use(cors({credentials: true, origin: 'http://localhost:3000'}))
 
     // backend root
     app.get('/', function(req, res){
@@ -88,7 +88,7 @@ module.exports = function(app) {
         .get(chats.readChats);
 
     // send chat
-    app.route('/chat/to/:recipient_id')
+    app.route('/chat/new')
         .post(chats.postChats);
 
     // === endof Chats ===
@@ -129,6 +129,9 @@ module.exports = function(app) {
     app.route('/collaborators')
         .get(collaborators.readAllCollaborators);
 
+    app.route('/project/application/:proj_id')
+        .get(collaborators.readApplication);
+
     // === endof Collaborators ===
 
     // === Experiences ===
@@ -138,9 +141,6 @@ module.exports = function(app) {
 
     app.route('/user/experience')
         .post(experiences.createExperiences);
-
-    app.route('/user/experience/:id')
-        .put(experiences.updateExperiences);
 
     app.route('/user/experience/:id')
         .delete(experiences.deleteExperiences);
@@ -163,16 +163,16 @@ module.exports = function(app) {
     // === Licenses ===
 
     app.route('/user/:user_id/licenses')
-        .get(licenses.readLicenses);
+        .get(licenses.readUserLicenses);
 
     app.route('/user/license')
         .post(licenses.createLicenses);
 
     app.route('/user/license/:id')
-        .put(licenses.updateLicenses);
-
-    app.route('/user/license/:id')
         .delete(licenses.deleteLicenses);
+
+    app.route('/user/licenses')
+        .get(licenses.readLicenses);
 
     // === endof Licenses ===
 
@@ -183,9 +183,6 @@ module.exports = function(app) {
 
     app.route('/user/portfolio')
         .post(portfolios.createPortfolios);
-
-    app.route('/user/portfolio/:id')
-        .put(portfolios.updatePortfolios);
 
     app.route('/user/portfolio/:id')
         .delete(portfolios.deletePortfolios);
@@ -205,9 +202,12 @@ module.exports = function(app) {
     app.route('/projects')
         .get(projects.readAllProjects);
 
+    app.route('/project/:user_id/join_request')
+        .get(projects.readJoinRequest);
+
     // create project (post)[project]
     app.route('/project/register')
-        .post(projects.createProjects, cors())
+        .post(projects.createProjects)
 
     // edit project (put)[project]
     app.route('/project/:id/description')
@@ -215,6 +215,9 @@ module.exports = function(app) {
 
     app.route('/project/:id/start')
         .put(projects.updateStartDate);
+
+    app.route('/project/:id/request')
+        .put(projects.updateJoinRequest);
 
     app.route('/project/:id/end')
         .put(projects.updateEndDate);
@@ -285,9 +288,6 @@ module.exports = function(app) {
         .post(roles.createRoles);
 
     app.route('/role/:id')
-        .put(roles.updateRoles);
-
-    app.route('/role/:id')
         .delete(roles.deleteRoles);
 
     // === endof Roles ===
@@ -297,11 +297,8 @@ module.exports = function(app) {
     app.route('/user/:user_id/skills')
         .get(skills.readUserSkills);
 
-    app.route('/user/skill')
+    app.route('/user/skill/')
         .post(skills.createSkills);
-
-    app.route('/user/skill/:id')
-        .put(skills.updateSkills);
 
     app.route('/user/skill/:id')
         .delete(skills.deleteSkills);

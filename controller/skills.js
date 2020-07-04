@@ -35,59 +35,68 @@ exports.readUserSkills = function(req, res) {
 };
 
 exports.createSkills = function(req, res) {
+    if(!req.headers.authorization){
+        response.credErr('Unauthorized', res);
+    }else{
+        var name = req.body.name;
+        var familiarity = req.body.familiarity;
+        var user_id = req.body.user_id;
 
-    var name = req.body.name;
-    var familiarity = req.body.familiarity;
-    var user_id = req.body.user_id;
-
-    try{
-        connection.query('INSERT INTO Skills (name, familiarity, user_id) values (?,?,?)',
-        [ name, familiarity, user_id ],
-        function (error, rows, fields){
-            if(error){
-                response.internalError(error.code, res);
-            } else{
-                response.ok("Operation Success!", res)
-            }
-        });
-    }catch(err){
-        response.clientError("Bad Request",res);
+        try{
+            connection.query('INSERT INTO Skills (name, familiarity, user_id) values (?,?,?)',
+            [ name, familiarity, user_id ],
+            function (error, rows, fields){
+                if(error){
+                    response.internalError(error.code, res);
+                } else{
+                    response.ok("Operation Success!", res)
+                }
+            });
+        }catch(err){
+            response.clientError("Bad Request",res);
+        }
     }
 };
 
 
 exports.updateSkills = function(req, res) {
+    if(!req.headers.authorization){
+        response.credErr('Unauthorized', res);
+    }else{
+        var name = req.body.name;
+        var familiarity = req.body.familiarity;
+        var id = req.params.id;
 
-    var name = req.body.name;
-    var familiarity = req.body.familiarity;
-    var id = req.params.id;
-
-    try{
-        connection.query('UPDATE Skills SET name = ?, familiarity = ? WHERE id = ?',
-        [ name, familiarity, id ],
-        function (error, rows, fields){
-            if(error){
-                response.internalError(error.code,res);
-            } else{
-                response.ok("Operation Success!", res)
-            }
-        });
-    }catch(err){
-        response.clientError("Bad Request",res);
+        try{
+            connection.query('UPDATE Skills SET name = ?, familiarity = ? WHERE ski_id = ?',
+            [ name, familiarity, id ],
+            function (error, rows, fields){
+                if(error){
+                    response.internalError(error.code,res);
+                } else{
+                    response.ok("Operation Success!", res)
+                }
+            });
+        }catch(err){
+            response.clientError("Bad Request",res);
+        }
     }
 };
 
 exports.deleteSkills = function(req, res) {
+    if(!req.headers.authorization){
+        response.credErr('Unauthorized', res);
+    }else{
+        var id = req.params.id;
 
-    var id = req.params.id;
-
-    connection.query('DELETE FROM Skills WHERE id = ?',
-    [ id ],
-    function (error, rows, fields){
-        if(error){
-            console.log(error)
-        } else{
-            response.ok("Operation Success!", res)
-        }
-    });
+        connection.query('DELETE FROM Skills WHERE ski_id = ?',
+        [ id ],
+        function (error, rows, fields){
+            if(error){
+                console.log(error)
+            } else{
+                response.ok("Operation Success!", res)
+            }
+        });
+    }
 };

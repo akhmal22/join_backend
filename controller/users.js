@@ -103,29 +103,16 @@ exports.updateUsers = function(req, res) {
 
         var hashPasswd = getHashedPassword(password);
 
-        var now = new Date();
-
-        var token = req.headers.authorization;
-        var decoded = header.jwt.decode(String(token).slice(String(token).lastIndexOf(' ') + 1), {complete: true});
-
         try{
-            if(now.getTime()/1000>decoded.payload.exp){
-                response.credErr('Token Expired', res);
-            }else{
-                if(decoded.payload.user_id!=id){
-                    response.forbidden('Forbidden',res);
-                }else{
-                    connection.query('UPDATE Users SET full_name = ?, password = ?, avatar = ?, status = ?, organization = ?, position = ? WHERE use_id = ?',
-                    [ full_name, hashPasswd, avatar, status, organization, position, id ],
-                    function (error, rows, fields){
-                        if(error){
-                            response.internalError(error.code, res);
-                        } else{
-                            response.ok("Berhasil merubah user!", res)
-                        }
-                    });
+            connection.query('UPDATE Users SET full_name = ?, password = ?, avatar = ?, status = ?, organization = ?, position = ? WHERE use_id = ?',
+            [ full_name, hashPasswd, avatar, status, organization, position, id ],
+            function (error, rows, fields){
+                if(error){
+                    response.internalError(error.code, res);
+                } else{
+                    response.ok("Operation Success", res);
                 }
-            }
+            });
         }catch(err){
             response.clientError("Bad Request",res);
         }
@@ -138,29 +125,16 @@ exports.deleteUsers = function(req, res) {
     }else{
         var id = req.params.id;
 
-        var now = new Date();
-
-        var token = req.headers.authorization;
-        var decoded = header.jwt.decode(String(token).slice(String(token).lastIndexOf(' ') + 1), {complete: true});
-
         try{
-            if(now.getTime()/1000>decoded.payload.exp){
-                response.credErr('Token Expired', res);
-            }else{
-                if(decoded.payload.user_id!=id){
-                    response.forbidden('Forbidden',res);
-                }else{
-                    connection.query('DELETE FROM Users WHERE use_id = ?',
-                    [ id ],
-                    function (error, rows, fields){
-                        if(error){
-                            response.internalError(error, res);
-                        } else{
-                            response.ok("Berhasil menghapus user!", res)
-                        }
-                    });
+            connection.query('DELETE FROM Users WHERE use_id = ?',
+            [ id ],
+            function (error, rows, fields){
+                if(error){
+                    response.internalError(error, res);
+                } else{
+                    response.ok("Operation Success", res);
                 }
-            }
+            });
         }catch(err){
             response.clientError("Bad Request",res);
         }

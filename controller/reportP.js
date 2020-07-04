@@ -34,43 +34,49 @@ exports.readOneReportP = function(req, res) {
 }
 
 exports.createReportP = function(req, res) {
+    if(!req.headers.authorization){
+        response.credErr('Unauthorized', res);
+    }else{
+        var name = req.body.name;
+        var description = req.body.description;
+        var reported_project = req.body.reported_project;
+        var reporting_user = req.body.reporting_user;
+        var status = req.body.status;
 
-    var name = req.body.name;
-    var description = req.body.description;
-    var reported_project = req.body.reported_project;
-    var reporting_user = req.body.reporting_user;
-    var status = req.body.status;
-
-    try{
-        connection.query('INSERT INTO Report_Project (name, description, reported_project, reporting_user) values (?,?,?,?)',
-        [ name, description, reported_project, reporting_user],
-        function (error, rows, fields){
-            if(error){
-                response.internalError(error, res);
-            } else{
-                response.ok("Operation Success!", res)
-            }
-        });
-    }catch(err){
-        response.clientError("Bad Request",res);
+        try{
+            connection.query('INSERT INTO Report_Project (name, description, reported_project, reporting_user) values (?,?,?,?)',
+            [ name, description, reported_project, reporting_user],
+            function (error, rows, fields){
+                if(error){
+                    response.internalError(error, res);
+                } else{
+                    response.ok("Operation Success!", res)
+                }
+            });
+        }catch(err){
+            response.clientError("Bad Request",res);
+        }
     }
 };
 
 exports.deleteReportP = function(req, res) {
+    if(!req.headers.authorization){
+        response.credErr('Unauthorized', res);
+    }else{
+        var id = req.params.id;
 
-    var id = req.params.id;
-
-    try{
-        connection.query('DELETE FROM Report_Project WHERE id = ?',
-        [ id ],
-        function (error, rows, fields){
-            if(error){
-                response.internalError(error, res);
-            } else{
-                response.ok("Operation Success!", res)
-            }
-        });
-    }catch(err){
-        response.clientError("Bad Request",res);
+        try{
+            connection.query('DELETE FROM Report_Project WHERE rproj_id = ?',
+            [ id ],
+            function (error, rows, fields){
+                if(error){
+                    response.internalError(error, res);
+                } else{
+                    response.ok("Operation Success!", res)
+                }
+            });
+        }catch(err){
+            response.clientError("Bad Request",res);
+        }
     }
 };

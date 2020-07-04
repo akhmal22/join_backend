@@ -7,7 +7,7 @@ var header = require('../header');
 // debugging purposes, not tokenize
 exports.readAllProjects = function(req, res){
     try{
-        connection.query('SELECT proj_id, name, Projects.date_created, description, type, duration, num_req_collaborator, username FROM Projects LEFT JOIN Users ON Projects.user_id = Users.use_id',
+        connection.query('SELECT proj_id, name, Projects.date_created, Projects.description, type, duration, num_req_collaborator, username FROM Projects LEFT JOIN Users ON Projects.user_id = Users.use_id',
         function (error, rows, fields){
             if(error){
                 response.internalError(error, res);
@@ -26,40 +26,48 @@ exports.readOwnedProjects = function(req, res) {
         response.credErr('Unauthorized', res);
     }else{
         var username = req.params.username;
-        var token = req.headers.authorization;
-        var decoded = header.jwt.decode(String(token).slice(String(token).lastIndexOf(' ') + 1), {complete: true});
-        var now = new Date();
 
         try{
-            if(now.getTime()/1000>decoded.payload.exp){
-                response.credErr('Token Expired', res);
-            }else{
-                if(decoded.payload.username!=username){
-                    response.credErr('Access Denied', res);
-                }else{
-                    connection.query('SELECT * FROM Projects LEFT JOIN Users ON Projects.user_id = Users.use_id WHERE username = ?',
-                    [ username ],
-                    function (error, rows, fields){
-                        if(error){
-                            response.internalError(error, res);
-                        } else{
-                            response.ok(rows,res);
-                        }
-                    });
+            connection.query('SELECT * FROM Projects LEFT JOIN Users ON Projects.user_id = Users.use_id WHERE username = ?',
+            [ username ],
+            function (error, rows, fields){
+                if(error){
+                    response.internalError(error, res);
+                } else{
+                    response.ok(rows,res);
                 }
-            }
+            });
         }catch(err){
             response.clientError('Bad Request', res);
         }
     }
 };
 
+
+exports.readJoinRequest = function(req, res) {
+    var user_id = req.params.user_id;
+
+    try{
+        connection.query('SELECT join_request FROM Projects WHERE user_id = ?',
+        [ user_id ],
+        function (error, rows, fields){
+            if(error){
+                response.internalError(error, res);
+            } else{
+                response.ok(rows,res);
+            }
+        });
+    }catch(err){
+        response.clientError('Bad Request', res);
+    }
+}
+
 // tested, proper
 exports.readOneProject = function(req, res) {
     var id = req.params.id;
 
     try{
-        connection.query('SELECT * FROM Projects WHERE id = ?',
+        connection.query('SELECT * FROM Projects LEFT JOIN Users ON Projects.user_id = Users.use_id WHERE proj_id = ?',
         [ id ],
         function(error, rows, fields){
             if(error){
@@ -72,6 +80,7 @@ exports.readOneProject = function(req, res) {
         response.clientError('Bad Request', res);
     }
 }
+
 
 
 exports.createProjects = function(req, res) {
@@ -87,30 +96,17 @@ exports.createProjects = function(req, res) {
 
         var init_date = '2019-12-31';
 
-        var now = new Date();
-
-        var token = req.headers.authorization;
-        var decoded = header.jwt.decode(String(token).slice(String(token).lastIndexOf(' ') + 1), {complete: true});
-
         try{
-            if(now.getTime()/1000>decoded.payload.exp){
-                response.credErr('Token Expired', res);
-            }else{
-                if(decoded.payload.user_id!=user_id){
-                    response.credErr('Access Denied', res);
-                }else{
-                    connection.query("INSERT INTO Projects (name, description, type, app_due_date, start_date, end_date, duration, num_req_collaborator, user_id) values (?,?,?,?,?, ADDDATE('2019-12-31', INTERVAL ? MONTH),?,?,?)",
-                    [ name, description, type, init_date, init_date, duration, duration, num_req_collaborator, user_id ],
-                    function (error, rows, fields){
-                        if(error){
-                            response.internalError(error.code, res)
-                            console.log(error)
-                        } else{
-                            response.ok("Operation Success", res)
-                        }
-                    });
+            connection.query("INSERT INTO Projects (name, description, type, app_due_date, start_date, end_date, duration, num_req_collaborator, user_id) values (?,?,?,?,?, ADDDATE('2019-12-31', INTERVAL ? MONTH),?,?,?)",
+            [ name, description, type, init_date, init_date, duration, duration, num_req_collaborator, user_id ],
+            function (error, rows, fields){
+                if(error){
+                    response.internalError(error.code, res)
+                    console.log(error)
+                } else{
+                    response.ok("Operation Success", res)
                 }
-            }
+            });
         }catch(err){
             response.clientError('Bad Request', res);
         }
@@ -131,39 +127,17 @@ exports.updateProjects = function(req, res) {
         var status = req.body.status;
         var id = req.params.id;
 
-        var now = new Date();
-
-        var token = req.headers.authorization;
-        var decoded = header.jwt.decode(String(token).slice(String(token).lastIndexOf(' ') + 1), {complete: true});
-
         try{
-            if(now.getTime()/1000>decoded.payload.exp){
-                response.credErr('Token Expired', res);
-            }else{
-                connection.query('SELECT user_id FROM Projects WHERE proj_id = ?',
-                [ id ],
-                function(error, rows, field){
-                    if(error){
-                        next();
-                    }else{
-                        var user_id = String(rows[0].user_id);
-                        if(decoded.payload.user_id!=user_id){
-                            response.credErr('Access Denied', res);
-                        }else{
-                            connection.query('UPDATE Projects SET description = ?, start_date = ?, end_date = ?, app_due_date = ?, num_req_collaborator = ?, status = ?, date_modified = now() WHERE proj_id = ?',
-                            [ description, start_date, end_date, app_due_date, num_req_collaborator, status, id ],
-                            function (error, rows, fields){
-                                if(error){
-                                    response.internalError(error, res)
-                                    console.log(error)
-                                } else{
-                                    response.ok("Operation Success", res)
-                                }
-                            });
-                        }
-                    }
-                });
-            }
+            connection.query('UPDATE Projects SET description = ?, start_date = ?, end_date = ?, app_due_date = ?, num_req_collaborator = ?, status = ?, date_modified = now() WHERE proj_id = ?',
+            [ description, start_date, end_date, app_due_date, num_req_collaborator, status, id ],
+            function (error, rows, fields){
+                if(error){
+                    response.internalError(error, res)
+                    console.log(error)
+                } else{
+                    response.ok("Operation Success", res)
+                }
+            });
         }catch(err){
             response.clientError('Bad Request', res);
         }
@@ -297,38 +271,16 @@ exports.deleteProjects = function(req, res) {
     }else{
         var id = req.params.id;
 
-        var now = new Date();
-
-        var token = req.headers.authorization;
-        var decoded = header.jwt.decode(String(token).slice(String(token).lastIndexOf(' ') + 1), {complete: true});
-
         try{
-            if(now.getTime()/1000>decoded.payload.exp){
-                response.credErr('Token Expired', res);
-            }else{
-                connection.query('SELECT user_id FROM Projects WHERE proj_id = ?',
-                [ id ],
-                function(error, rows, field){
-                    if(error){
-                        next();
-                    }else{
-                        var user_id = String(rows[0].user_id);
-                        if(decoded.payload.user_id!=user_id){
-                            response.credErr('Access Denied', res);
-                        }else{
-                            connection.query('DELETE FROM Projects WHERE proj_id = ?',
-                            [ id ],
-                            function (error, rows, fields){
-                                if(error){
-                                    response.internalError(error, res)
-                                } else{
-                                    response.ok("Operation Success", res)
-                                }
-                            });
-                        }
-                    }
-                });
-            }
+            connection.query('DELETE FROM Projects WHERE proj_id = ?',
+            [ id ],
+            function (error, rows, fields){
+                if(error){
+                    response.internalError(error, res)
+                } else{
+                    response.ok("Operation Success", res)
+                }
+            });
         }catch(err){
             response.clientError('Bad Request', res);
         }
