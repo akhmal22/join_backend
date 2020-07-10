@@ -31,33 +31,20 @@ exports.readUsers = function(req, res) {
 };
 
 exports.readOneUser = function(req, res) {
-    if(!req.headers.authorization){
-        response.credErr('Unauthorized', res);
-    }else{
-        var username = req.params.username;
+    var username = req.params.username;
 
-        var now = new Date();
-
-        var token = req.headers.authorization;
-        var decoded = header.jwt.decode(String(token).slice(String(token).lastIndexOf(' ') + 1), {complete: true});
-
-        try{
-            if(now.getTime()/1000>decoded.payload.exp){
-                response.credErr('Token Expired', res);
+    try{
+        connection.query('SELECT * FROM Users WHERE username = ?',
+        [ username ],
+        function(error, rows, fields){
+            if(error){
+                response.internalError(error, res);
             }else{
-                connection.query('SELECT * FROM Users WHERE username = ?',
-                [ username ],
-                function(error, rows, fields){
-                    if(error){
-                        response.internalError(error, res);
-                    }else{
-                        response.ok(rows, res);
-                    }
-                });
+                response.ok(rows, res);
             }
-        }catch(err){
-            response.clientError('Bad Request', res);
-        }
+        });
+    }catch(err){
+        response.clientError('Bad Request', res);
     }
 }
 

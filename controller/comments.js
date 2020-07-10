@@ -7,7 +7,7 @@ var header = require('../header');
 exports.readComments = function(req, res) {
     var project_id = req.params.project_id;
     try{
-        connection.query('SELECT * FROM Comments WHERE project_id = ?',
+        connection.query('SELECT Comments.*, username FROM Comments LEFT JOIN Users ON Comments.user_id = Users.use_id WHERE project_id = ?',
         [project_id],
         function (error, rows, fields){
             if(error){
@@ -20,6 +20,21 @@ exports.readComments = function(req, res) {
         response.clientError("Bad Request", res)
     }
 };
+
+exports.readAllComments = function(req, res) {
+    try{
+        connection.query('SELECT * FROM Comments',
+        function (error, rows, fields){
+            if(error){
+                response.internalError(error.code, res);
+            } else{
+                response.ok(rows, res)
+            }
+        });
+    }catch(err){
+        response.clientError("Bad Request", res)
+    }
+}
 
 exports.createComments = function(req, res) {
     if(!req.headers.authorization){

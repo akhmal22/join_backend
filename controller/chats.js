@@ -51,7 +51,7 @@ exports.postChats = function(req, res) {
         var sender_username = req.body.sender_username;
 
         try{
-            connection.query('INSERT INTO Chats (message, recipient_id, sender_id, sender_username) values (?,?,?,?)',
+            connection.query('INSERT INTO Chats (message, recipient_id, sender_id, sender_username) values (?,(SELECT use_id FROM Users WHERE username = ?),?,?)',
             [ message, recipient_id, sender_id, sender_username ],
             function (error, rows, fields){
                 if(error){

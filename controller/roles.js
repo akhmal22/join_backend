@@ -47,7 +47,7 @@ exports.createRoles = function(req, res) {
             [ name, description, project_id, collaborator_id ],
             function (error, rows, fields){
                 if(error){
-                    response.internalError(error.code, res);
+                    response.internalError(error, res);
                 } else{
                     response.ok("Operation Success!", res)
                 }

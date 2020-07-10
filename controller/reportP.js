@@ -41,7 +41,6 @@ exports.createReportP = function(req, res) {
         var description = req.body.description;
         var reported_project = req.body.reported_project;
         var reporting_user = req.body.reporting_user;
-        var status = req.body.status;
 
         try{
             connection.query('INSERT INTO Report_Project (name, description, reported_project, reporting_user) values (?,?,?,?)',

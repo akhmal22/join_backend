@@ -99,6 +99,9 @@ module.exports = function(app) {
     app.route('/comment/:project_id')
         .get(comments.readComments);
 
+    app.route('/comments')
+        .get(comments.readAllComments);
+
     // post comment
     app.route('/comment/post')
         .post(comments.createComments);
@@ -111,11 +114,11 @@ module.exports = function(app) {
 
     // === Collaborators ===
 
-    app.route('/project/:id/collaborators')
+    app.route('/project/collaborators/:proj_id')
         .get(collaborators.readCollaborators);
 
     app.route('/project/:id/collaboratorcount')
-        .get(collaborators.countCollaborators);
+        .get(collaborators.countActiveCollaborators);
 
     app.route('/project/:id/collaborator/register')
         .post(collaborators.createCollaborators);
@@ -131,6 +134,9 @@ module.exports = function(app) {
 
     app.route('/project/application/:proj_id')
         .get(collaborators.readApplication);
+
+    app.route('/collaborator/unemployed/:proj_id')
+        .get(collaborators.readUnemployed);
 
     // === endof Collaborators ===
 
@@ -215,9 +221,6 @@ module.exports = function(app) {
 
     app.route('/project/:id/start')
         .put(projects.updateStartDate);
-
-    app.route('/project/:id/request')
-        .put(projects.updateJoinRequest);
 
     app.route('/project/:id/end')
         .put(projects.updateEndDate);

@@ -22,24 +22,20 @@ exports.readAllProjects = function(req, res){
 
 // tested, proper
 exports.readOwnedProjects = function(req, res) {
-    if(!req.headers.authorization){
-        response.credErr('Unauthorized', res);
-    }else{
-        var username = req.params.username;
+    var username = req.params.username;
 
-        try{
-            connection.query('SELECT * FROM Projects LEFT JOIN Users ON Projects.user_id = Users.use_id WHERE username = ?',
-            [ username ],
-            function (error, rows, fields){
-                if(error){
-                    response.internalError(error, res);
-                } else{
-                    response.ok(rows,res);
-                }
-            });
-        }catch(err){
-            response.clientError('Bad Request', res);
-        }
+    try{
+        connection.query('SELECT Projects.*, username FROM Projects LEFT JOIN Users ON Projects.user_id = Users.use_id WHERE username = ?',
+        [ username ],
+        function (error, rows, fields){
+            if(error){
+                response.internalError(error, res);
+            } else{
+                response.ok(rows,res);
+            }
+        });
+    }catch(err){
+        response.clientError('Bad Request', res);
     }
 };
 
@@ -67,7 +63,7 @@ exports.readOneProject = function(req, res) {
     var id = req.params.id;
 
     try{
-        connection.query('SELECT * FROM Projects LEFT JOIN Users ON Projects.user_id = Users.use_id WHERE proj_id = ?',
+        connection.query('SELECT Projects.*, Users.username, Users.token FROM Projects LEFT JOIN Users ON Projects.user_id = Users.use_id WHERE proj_id = ?',
         [ id ],
         function(error, rows, fields){
             if(error){
@@ -97,8 +93,8 @@ exports.createProjects = function(req, res) {
         var init_date = '2019-12-31';
 
         try{
-            connection.query("INSERT INTO Projects (name, description, type, app_due_date, start_date, end_date, duration, num_req_collaborator, user_id) values (?,?,?,?,?, ADDDATE('2019-12-31', INTERVAL ? MONTH),?,?,?)",
-            [ name, description, type, init_date, init_date, duration, duration, num_req_collaborator, user_id ],
+            connection.query("INSERT INTO Projects (name, description, type, duration, num_req_collaborator, user_id) values (?,?,?,?,?,?)",
+            [ name, description, type, duration, num_req_collaborator, user_id ],
             function (error, rows, fields){
                 if(error){
                     response.internalError(error.code, res)
@@ -120,16 +116,14 @@ exports.updateProjects = function(req, res) {
         response.credErr('Unauthorized', res);
     }else{
         var description = req.body.description;
-        var start_date = req.body.start_date;
-        var end_date = req.body.end_date;
-        var app_due_date = req.body.app_due_date;
         var num_req_collaborator = req.body.num_req_collaborator;
+        var duration = req.body.duration;
         var status = req.body.status;
         var id = req.params.id;
 
         try{
-            connection.query('UPDATE Projects SET description = ?, start_date = ?, end_date = ?, app_due_date = ?, num_req_collaborator = ?, status = ?, date_modified = now() WHERE proj_id = ?',
-            [ description, start_date, end_date, app_due_date, num_req_collaborator, status, id ],
+            connection.query('UPDATE Projects SET description = ?, num_req_collaborator = ?, status = ?, date_modified = now() WHERE proj_id = ?',
+            [ description, num_req_collaborator, status, id ],
             function (error, rows, fields){
                 if(error){
                     response.internalError(error, res)
@@ -245,22 +239,24 @@ exports.updateColl = function(req, res) {
 };
 
 exports.updateStatus = function(req, res) {
+    if(!req.headers.authorization){
+        response.credErr('Unauthorized', res);
+    }else{
+        var id = req.params.id;
 
-    var status = req.body.status;
-    var id = req.params.id;
-
-    try{
-        connection.query('UPDATE Projects SET status = ?, date_modified = now() WHERE id = ?',
-        [ status, id ],
-        function(error, rows, fields){
-            if(error){
-                response.internalError(error, res)
-            }else{
-                response.ok("Operation Success", res)
-            }
-        });
-    }catch(err){
-        response.clientError("Bad Request", res);
+        try{
+            connection.query('UPDATE Projects SET status = 1, date_modified = now() WHERE proj_id = ?',
+            [ id ],
+            function(error, rows, fields){
+                if(error){
+                    response.internalError(error, res)
+                }else{
+                    response.ok("Operation Success", res)
+                }
+            });
+        }catch(err){
+            response.clientError("Bad Request", res);
+        }
     }
 };
 
