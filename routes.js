@@ -141,14 +141,16 @@ module.exports = function(app) {
     // === endof Collaborators ===
 
     // === Experiences ===
-
-    app.route('/user/:id/experiences')
+    app.route('/user/experiences')
         .get(experiences.readExperiences);
+
+    app.route('/user/:user_id/experiences')
+        .get(experiences.readUserExperiences);
 
     app.route('/user/experience')
         .post(experiences.createExperiences);
 
-    app.route('/user/experience/:id')
+    app.route('/user/experience/:exp_id')
         .delete(experiences.deleteExperiences);
 
     // === endof Experiences ===
@@ -185,6 +187,9 @@ module.exports = function(app) {
     // === Portfolios ===
 
     app.route('/user/:user_id/portfolios')
+        .get(portfolios.readUserPortfolios);
+
+    app.route('/portfolios')
         .get(portfolios.readPortfolios);
 
     app.route('/user/portfolio')
@@ -327,10 +332,13 @@ module.exports = function(app) {
     app.route('/token/:username')
         .get(users.getToken);
 
-    app.route('/user/:id')
+    app.route('/user/:use_id')
         .put(users.updateUsers);
 
-    app.route('/user/:id')
+    app.route('/user/suspense/:use_id')
+        .put(users.suspendUsers);
+
+    app.route('/user/:use_id')
         .delete(users.deleteUsers);
 
     // === endof Users ===

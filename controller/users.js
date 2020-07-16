@@ -80,41 +80,15 @@ exports.updateUsers = function(req, res) {
     if(!req.headers.authorization){
         response.credErr('Unauthorized', res);
     }else{
-        var full_name = req.body.full_name;
-        var password = req.body.password;
-        var avatar = req.body.avatar;
-        var status = req.body.status;
+        var full_name = req.body.fullname;
         var organization = req.body.organization;
         var position = req.body.position;
-        var id = req.params.id;
-
-        var hashPasswd = getHashedPassword(password);
-
-        try{
-            connection.query('UPDATE Users SET full_name = ?, password = ?, avatar = ?, status = ?, organization = ?, position = ? WHERE use_id = ?',
-            [ full_name, hashPasswd, avatar, status, organization, position, id ],
-            function (error, rows, fields){
-                if(error){
-                    response.internalError(error.code, res);
-                } else{
-                    response.ok("Operation Success", res);
-                }
-            });
-        }catch(err){
-            response.clientError("Bad Request",res);
-        }
-    }
-};
-
-exports.deleteUsers = function(req, res) {
-    if(!req.headers.authorization){
-        response.credErr('Unauthorized', res);
-    }else{
-        var id = req.params.id;
+        var description = req.body.description;
+        var id = req.params.use_id;
 
         try{
-            connection.query('DELETE FROM Users WHERE use_id = ?',
-            [ id ],
+            connection.query('UPDATE Users SET full_name = ?, organization = ?, position = ?, description = ?, date_modified = now() WHERE use_id = ?',
+            [ full_name, organization, position, description, id ],
             function (error, rows, fields){
                 if(error){
                     response.internalError(error, res);
@@ -128,6 +102,90 @@ exports.deleteUsers = function(req, res) {
     }
 };
 
+exports.suspendUsers = function(req, res) {
+    if(!req.headers.authorization){
+        response.credErr('Unauthorized', res);
+    }else{
+        var id = req.params.use_id;
+        var password = req.body.password;
+
+        try{
+            connection.query('SELECT password FROM Users WHERE use_id = ?',
+            [ id ],
+            function(error, rows, fields) {
+                if(error){
+                    response.internalError(error,res);
+                }else{
+                    // puts query result rows to const
+                    const pw = rows;
+
+                    // checks if password requested match
+                    const match = pw.find(p => {
+                        return p.password === getHashedPassword(password);
+                    });
+                    if(match){
+                        connection.query('UPDATE Users SET status = 1, date_modified = now() WHERE use_id = ?',
+                        [ id ],
+                        function (error, rows, fields){
+                            if(error){
+                                response.internalError(error, res);
+                            } else{
+                                response.ok("Operation Success", res);
+                            }
+                        })
+                    }else{
+                        response.credErr("Password not match",res);
+                    }
+                }
+            })
+        }catch(err){
+            response.clientError("Bad Request",res);
+        }
+    }
+}
+
+exports.deleteUsers = function(req, res) {
+    if(!req.headers.authorization){
+        response.credErr('Unauthorized', res);
+    }else{
+        var id = req.params.use_id;
+        var password = req.body.password;
+
+        try{
+            connection.query('SELECT password FROM Users WHERE use_id = ?',
+            [ id ],
+            function(error, rows, fields) {
+                if(error){
+                    response.internalError("Internal server error",res);
+                }else{
+                    // puts query result rows to const
+                    const pw = rows;
+
+                    // checks if password requested match
+                    const match = pw.find(p => {
+                        return p.password === getHashedPassword(password);
+                    });
+                    if(match){
+                        connection.query('DELETE FROM Users WHERE use_id = ?',
+                        [ id ],
+                        function (error, rows, fields){
+                            if(error){
+                                response.internalError(error, res);
+                            } else{
+                                response.ok("Operation Success", res);
+                            }
+                        })
+                    }else{
+                        response.credErr("Password not match",res);
+                    }
+                }
+            })
+        }catch(err){
+            response.clientError("Bad Request",res);
+        }
+    }
+};
+
 exports.loginUsers = function(req, res) {
     // requests username and password
     var username = req.body.username;
@@ -135,7 +193,7 @@ exports.loginUsers = function(req, res) {
 
     try{
         // SELECT password query
-        connection.query('SELECT password FROM Users WHERE username = ?',
+        connection.query('SELECT password, status FROM Users WHERE username = ?',
         [ username ],
         function(error, rows, fields){
             if(error){
@@ -149,13 +207,17 @@ exports.loginUsers = function(req, res) {
                     return p.password === getHashedPassword(password);
                 });
 
+                const isSuspend = pw.find(s => {
+                    return s.status === 1;
+                })
+
                 // success message or fail message
-                if(match){
+                if(match && !isSuspend){
                     connection.query('SELECT use_id FROM Users WHERE username = ?',
                     [ username ],
                     function(error, rows, fields){
                         if(error){
-                            next();
+                            response.internalError("Operation Failed",res);
                         }else{
                             var id = String(rows[0].use_id);
                             var token = generateAuthToken(username, id);
@@ -170,6 +232,8 @@ exports.loginUsers = function(req, res) {
                             response.ok("logged in",res);
                         }
                     })
+                }else if(isSuspend){
+                    response.credError("User suspended",res);
                 }else{
                     response.clientError("Password not match!",res);
                 }

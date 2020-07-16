@@ -54,7 +54,7 @@ exports.createPortfolios = function(req, res) {
             [ name, description, start_date, end_date, url, user_id ],
             function (error, rows, fields){
                 if(error){
-                    response.internalError(error.code, res);
+                    response.internalError(error, res);
                 } else{
                     response.ok("Operation Success!", res)
                 }

@@ -14,7 +14,7 @@ exports.readChats = function(req, res) {
             [ id, id],
             function (error, rows, fields){
                 if(error){
-                    response.internalError(error.code, res);
+                    response.internalError(error, res);
                 } else{
                     response.ok(rows, res)
                 }
@@ -31,7 +31,7 @@ exports.readAllChats = function(req, res){
         [ id, id],
         function (error, rows, fields){
             if(error){
-                response.internalError(error.code, res);
+                response.internalError(error, res);
             } else{
                 response.ok(rows, res)
             }
@@ -52,10 +52,10 @@ exports.postChats = function(req, res) {
 
         try{
             connection.query('INSERT INTO Chats (message, recipient_id, sender_id, sender_username) values (?,(SELECT use_id FROM Users WHERE username = ?),?,?)',
-            [ message, recipient_id, sender_id, sender_username ],
+            [ message, recipient_username, sender_id, sender_username ],
             function (error, rows, fields){
                 if(error){
-                    response.internalError(error.code, res);
+                    response.internalError(error, res);
                 } else{
                     response.ok("Operation Success", res)
                 }

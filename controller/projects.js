@@ -118,16 +118,14 @@ exports.updateProjects = function(req, res) {
         var description = req.body.description;
         var num_req_collaborator = req.body.num_req_collaborator;
         var duration = req.body.duration;
-        var status = req.body.status;
         var id = req.params.id;
 
         try{
-            connection.query('UPDATE Projects SET description = ?, num_req_collaborator = ?, status = ?, date_modified = now() WHERE proj_id = ?',
-            [ description, num_req_collaborator, status, id ],
+            connection.query('UPDATE Projects SET description = ?, num_req_collaborator = ?, duration = ?, date_modified = now() WHERE proj_id = ?',
+            [ description, num_req_collaborator, duration, id ],
             function (error, rows, fields){
                 if(error){
                     response.internalError(error, res)
-                    console.log(error)
                 } else{
                     response.ok("Operation Success", res)
                 }

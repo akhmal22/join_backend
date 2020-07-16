@@ -68,7 +68,7 @@ exports.deleteExperiences = function(req, res) {
     if(!req.headers.authorization){
         response.credErr('Unauthorized', res);
     }else{
-        var id = req.params.id;
+        var id = req.params.exp_id;
 
         try{
             connection.query('DELETE FROM Experiences WHERE exp_id = ?',
