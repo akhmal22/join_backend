@@ -160,11 +160,17 @@ module.exports = function(app) {
     app.route('/joined/register')
         .post(joinedProjects.createJoinedProjects);
 
+    app.route('/joined/request/:child_id')
+        .get(joinedProjects.readJoinedProjectsChild);
+
     app.route('/joined/')
         .get(joinedProjects.readJoinedProjects);
 
-    app.route('/joined/:id')
+    app.route('/joined/:join_id')
         .delete(joinedProjects.deleteJoinedProjects);
+
+    app.route('/joined/:join_id')
+        .put(joinedProjects.updateStatus);
 
     // === endof JoinedProject ===
 
