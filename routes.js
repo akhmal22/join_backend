@@ -18,7 +18,7 @@ module.exports = function(app) {
     var cors = require('cors');
     var jwt = require('jsonwebtoken');
 
-    var origin = ['http://52.14.87.244:3000', 'http://localhost:3000']
+    var whitelist = ['http://52.14.87.244:3000', 'http://localhost:3000']
     app.use(cors({credentials: true,
       origin:
         function (origin, callback) {
