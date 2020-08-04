@@ -18,7 +18,17 @@ module.exports = function(app) {
     var cors = require('cors');
     var jwt = require('jsonwebtoken');
 
-    app.use(cors({credentials: true, origin: 'http://localhost:3000' || 'http://52.14.87.244:3000'}))
+    var origin = ['http://52.14.87.244:3000', 'http://localhost:3000']
+    app.use(cors({credentials: true,
+      origin:
+        function (origin, callback) {
+          if (whitelist.indexOf(origin) !== -1) {
+            callback(null, true)
+          } else {
+            callback(new Error('Not allowed by CORS'))
+          }
+        }
+    }))
 
     // backend root
     app.get('/', function(req, res){
